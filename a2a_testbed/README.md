@@ -71,6 +71,14 @@ In every `malicious_race` trial the approved plan was `add GET /version ... retu
 ## Threat model and limits (for the paper)
 
 - B changes `task.md` only through its own A2A skill. It never touches A's process or `server.py`.
+- **Timing.** The runner fires B's edit at an exact point to remove noise. A real attacker
+  doesn't need that precision: the window is the approval latency (seconds to minutes for a
+  human or LLM approver), and `INPUT_REQUIRED` is visible through task status, subscriptions and
+  push notifications.
+- **Plan in history.** A's approved plan is in the A2A task history, but A implements from
+  `task.md`, which is the shared source of truth. The LLM implementation prompt doesn't include
+  the approved plan yet. A `--with-plan` variant (plan included) would be the strongest version
+  of RQ1 and is still to do.
 - The approver is a simple rule (refuse plans that mention keys/secrets/tokens/credentials). The
   `malicious_before` control shows it catches the attack when there's no race.
 - Scripted mode shows the race exists in the flow. LLM mode measures whether real models faithfully
