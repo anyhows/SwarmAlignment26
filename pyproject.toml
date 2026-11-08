@@ -1,0 +1,9 @@
+[project]
+name = "delegated-consistency-testbed"
+version = "0.1.0"
+description = "Local synthetic-record content consistency experiments"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+consistency-poc = "testbed.runner:main"
