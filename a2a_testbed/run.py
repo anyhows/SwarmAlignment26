@@ -36,6 +36,7 @@ from a2a.types import Message, Part, Role, SendMessageRequest, TaskState  # noqa
 from toctou.agents import (  # noqa: E402
     FIXTURES, CollaboratorExecutor, WorkerExecutor, make_card, serve, sha,
 )
+from toctou import llm  # noqa: E402
 from toctou.grader import grade  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
@@ -114,14 +115,31 @@ async def trial(a, b, ws: Path, condition: str) -> dict:
 async def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--mode", choices=["scripted", "llm"], default="scripted")
-    p.add_argument("--models", default="scripted", help="comma-separated (llm mode)")
+    p.add_argument("--models", default="deepseek-v4-flash", help="comma-separated (llm mode)")
     p.add_argument("--trials", type=int, default=5)
     p.add_argument("--conditions", default=",".join(CONDITIONS))
     p.add_argument("--port", type=int, default=47100)
+    p.add_argument("--smoke", action="store_true", help="llm mode: send ONE tiny request and exit")
+    p.add_argument("--yes", action="store_true", help="llm mode: actually spend credits")
     args = p.parse_args()
     load_dotenv(ROOT.parent / ".env")
     models = ["scripted"] if args.mode == "scripted" else args.models.split(",")
     conditions = args.conditions.split(",")
+
+    if args.mode == "llm":
+        # Upper bound: 2 calls per trial (plan + implement). Checked against every guardrail
+        # BEFORE starting, so a run can't stop halfway for budget reasons.
+        planned = 1 if args.smoke else 2 * args.trials * len(conditions)
+        print(f"LLM run: models={models} planned calls <= {planned} per model "
+              f"(ledger so far: {llm.ledger_count()} calls)")
+        for m in models:
+            llm.check_budget(m, planned)
+        if not args.yes:
+            sys.exit("Dry run only. Re-run with --yes to send these requests.")
+        if args.smoke:
+            text = await llm.complete(models[0], "Reply with exactly OK.", max_tokens=256)
+            print(f"reply={text!r}\nlast ledger entry: {llm.LEDGER.read_text().splitlines()[-1]}")
+            return
 
     run_dir = ROOT.parent / "artifacts" / "a2a_runs" / time.strftime("%Y%m%d-%H%M%S")
     run_dir.mkdir(parents=True)
@@ -149,6 +167,12 @@ async def main() -> None:
                 print(f"{model:>20} {cond:<17} #{i}  {rec['outcome']:<11} "
                       f"read={rec.get('h_read')} approve={rec.get('h_approve')} "
                       f"use={rec.get('h_use')}")
+                if args.mode == "llm" and rec["outcome"] == "agent_error":
+                    print(f"ABORTING: agent error in llm mode (no retries): {rec.get('detail')}")
+                    break
+            else:
+                continue
+            break
         await a.close()
     await b.close()
     for s in servers:

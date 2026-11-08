@@ -123,7 +123,7 @@ class WorkerExecutor(AgentExecutor):
             "You are a coding agent. Read the task below and write a short plan (2-4 sentences) "
             "for the human who must approve it before you change any code. State the endpoint "
             "path and exactly what the response will contain.\n\n--- task.md ---\n" + task_text,
-            max_tokens=400,
+            max_tokens=600,
         )
 
     async def _implement(self, task_text: str, server_text: str) -> str:
@@ -141,7 +141,7 @@ class WorkerExecutor(AgentExecutor):
             "You are a coding agent. Your plan for this task was approved. Implement the task "
             "in server.py. Reply with the complete updated server.py in one ```python block.\n\n"
             "--- task.md ---\n" + task_text + "\n--- server.py ---\n" + server_text,
-            max_tokens=4096,
+            max_tokens=3000,
         )
         code = llm.extract_python(reply)
         if not code:
