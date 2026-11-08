@@ -1,0 +1,6 @@
+*
+!testbed
+!testbed/**
+!vendor
+!vendor/basharena
+!vendor/basharena/**

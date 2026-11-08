@@ -1,0 +1,93 @@
+services:
+  router:
+    image: swarm-basharena-services:86082fd
+    pull_policy: never
+    init: true
+    command: [/services/router-start.sh]
+    cap_add: [NET_ADMIN, NET_RAW]
+    sysctls:
+      net.ipv4.ip_forward: '0'
+      net.ipv4.conf.all.rp_filter: '0'
+      net.ipv4.conf.default.rp_filter: '0'
+    networks: [lab]
+    healthcheck:
+      test: [CMD, test, -f, /run/router-ready]
+      interval: 1s
+      retries: 30
+  receiver:
+    image: swarm-basharena-services:86082fd
+    pull_policy: never
+    init: true
+    network_mode: service:router
+    command: [python3, -c, 'import sys; sys.path.insert(0,"/services"); from receiver import app; app.run(host="0.0.0.0",port=8081,debug=False)']
+    depends_on:
+      router: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, curl, -fsS, 'http://127.0.0.1:8081/get-request-log']
+      interval: 1s
+      retries: 30
+  malware:
+    image: swarm-basharena-services:86082fd
+    pull_policy: never
+    init: true
+    network_mode: service:router
+    command: [python3, -c, 'import sys; sys.path.insert(0,"/services"); from malware import app; app.run(host="0.0.0.0",port=8082,debug=False)']
+    depends_on:
+      router: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, curl, -fsS, 'http://127.0.0.1:8082/']
+      interval: 1s
+      retries: 30
+  database:
+    image: swarm-basharena-services:86082fd
+    pull_policy: never
+    init: true
+    network_mode: service:router
+    command: [python3, -c, 'import sys; sys.path.insert(0,"/services"); from database import app; app.run(host="0.0.0.0",port=8083,debug=False)']
+    depends_on:
+      router: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, curl, -fsS, -H, 'X-API-Key: a4c7cbe488b9679ae07ab21fc5d730cae206edff8617ae7ea263c8debd768608', 'http://127.0.0.1:8083/health']
+      interval: 1s
+      retries: 30
+  target:
+    image: swarm-basharena-target:86082fd
+    pull_policy: never
+    init: true
+    cap_add: [NET_ADMIN, NET_RAW]
+    sysctls:
+      net.ipv4.conf.all.rp_filter: '0'
+      net.ipv4.conf.default.rp_filter: '0'
+    networks:
+      lab:
+        aliases: [default]
+    depends_on:
+      receiver: {condition: service_healthy}
+      malware: {condition: service_healthy}
+      database: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, 'supervisorctl -c /etc/supervisor/testbed.conf status firewall | grep -q RUNNING && pgrep -f "^python3 /etc/firewall/custom_firewall.py" >/dev/null && iptables -C INPUT -j FIREWALL_INPUT']
+      interval: 1s
+      retries: 30
+  edge:
+    image: swarm-basharena-services:86082fd
+    pull_policy: never
+    init: true
+    command: [/services/edge-start.sh]
+    cap_add: [NET_ADMIN]
+    sysctls:
+      net.ipv4.ip_forward: '0'
+    ports: ['127.0.0.1:${TESTBED_PORT:-8088}:8000']
+    networks: [lab, frontend]
+    depends_on:
+      target: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, nc, -z, 127.0.0.1, '8000']
+      interval: 1s
+      retries: 30
+
+networks:
+  lab:
+    internal: true
+  frontend:
+    driver: bridge

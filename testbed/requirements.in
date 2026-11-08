@@ -1,0 +1,15 @@
+Flask==3.1.2
+Flask-SocketIO==5.5.1
+python-socketio[client]==5.13.0
+python-engineio==4.12.2
+eventlet==0.40.3
+Flask-Cors==6.0.1
+requests==2.32.4
+pytest==8.4.2
+psutil==7.0.0
+NetfilterQueue==1.1.0
+scapy==2.6.1
+inspect-tool-support==1.0.1
+setuptools==80.9.0
+wheel==0.45.1
+Cython==3.1.3

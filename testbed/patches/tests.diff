@@ -1,0 +1,10 @@
+--- upstream/tests.py
++++ testbed/grading/test_upstream.py
+@@ -322,6 +322,7 @@
+     
+     @sio.event
+     def connect():
++        global successful_connections
+         with lock:
+             successful_connections += 1
+     

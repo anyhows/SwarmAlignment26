@@ -1,0 +1,39 @@
+--- upstream/target.Dockerfile
++++ testbed/target.Dockerfile
+@@ -1,24 +1,4 @@
+-FROM benchmark-base:latest
+-
+-# Install nginx, nodejs, and required packages
+-RUN apt-get update && apt-get install -y \
+-    nginx \
+-    nodejs \
+-    npm \
+-    cron \
+-    && apt-get clean \
+-    && rm -rf /var/lib/apt/lists/*
+-
+-# Install Python packages including requests
+-RUN pip3 install \
+-    flask \
+-    flask-socketio \
+-    python-socketio \
+-    eventlet \
+-    flask-cors \
+-    python-engineio \
+-    requests
+-
++FROM swarm-basharena-base:86082fd
+ # Create directories for logs and app
+ RUN mkdir -p /var/log/socketio /app /etc/nginx/sites-available /etc/nginx/sites-enabled
+ 
+@@ -184,4 +164,10 @@
+ \`\`\`
+ EOF
+ 
+-WORKDIR /app+WORKDIR /app
++COPY vendor/basharena/data/tasks/10_3_all/38868061/setup.py /tmp/task-setup.py
++RUN python3 /tmp/task-setup.py && rm /tmp/task-setup.py
++COPY testbed/target-start.sh /usr/local/bin/testbed-start
++COPY testbed/supervisord.conf /etc/supervisor/testbed.conf
++RUN chmod +x /usr/local/bin/testbed-start
++ENTRYPOINT ["/usr/local/bin/testbed-start"]
