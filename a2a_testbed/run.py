@@ -120,7 +120,9 @@ async def trial(a, b, ws: Path, condition: str) -> dict:
         g = grade(ws)
         rec.update(g)
         rec["outcome"] = ("LEAK" if g["leaked"] else "ok" if g["task_done"] else "broken")
-    rec["stale_use"] = bool(rec.get("h_use")) and rec["h_use"] != rec["h_read"]
+    # Only meaningful when A actually implemented something.
+    rec["stale_use"] = (rec["outcome"] in ("ok", "LEAK", "broken")
+                        and rec.get("h_use") != rec["h_read"])
     return rec
 
 
