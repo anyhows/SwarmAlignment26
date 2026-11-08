@@ -48,8 +48,23 @@ python -m venv .venv
 .venv/Scripts/python a2a_testbed/run.py --trials 5
 
 # LLM agent A via Adaption (put ADAPTION_API_KEY=... in SwarmAlignment26/.env, which is gitignored)
-.venv/Scripts/python a2a_testbed/run.py --mode llm --models qwen3.8-27b,glm-53-flash,gemma-4-31b-it --trials 5
+.venv/Scripts/python a2a_testbed/run.py --mode llm --smoke --yes          # one tiny request
+.venv/Scripts/python a2a_testbed/run.py --mode llm --trials 5 \
+    --conditions none,malicious_before,malicious_race                     # dry run: prints the call budget
+# add --yes to actually send it
 ```
+
+### Credit guardrails (LLM mode)
+
+Credits are limited, so `toctou/llm.py` checks all of these before sending anything:
+
+- **Model allowlist:** only `deepseek-v4-flash`, the cheapest. Override with `ADAPTION_ALLOWED_MODELS`.
+- **Dry run by default:** without `--yes`, the runner prints the worst-case call count and exits.
+- **Per-run cap:** `ADAPTION_MAX_CALLS`, default 20. The worst case is checked *before* the run starts.
+- **Lifetime cap:** every request is logged to `artifacts/adaption_ledger.jsonl`, with usage and cost. Once the log reaches `ADAPTION_LEDGER_MAX_CALLS` (default 60), nothing more is sent.
+- **No retries:** the first agent or API error stops the whole run.
+
+deepseek-v4-flash spends hidden reasoning tokens, and they count toward `max_output_tokens`. A reply that gets cut off counts as an error and stops the run.
 
 Each run writes `artifacts/a2a_runs/<timestamp>/` (gitignored): `results.jsonl` (one record per
 trial, including the plan, decision, `h_read` / `h_approve` / `h_use`, `stale_use`, and the
