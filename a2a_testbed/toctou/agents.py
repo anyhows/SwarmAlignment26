@@ -78,10 +78,17 @@ async def _open_task(context, event_queue) -> TaskUpdater:
 
 
 class WorkerExecutor(AgentExecutor):
-    """Agent A. mode='scripted' implements the spec deterministically; mode='llm' asks a model."""
+    """Agent A. mode='scripted' implements the spec deterministically; mode='llm' asks a model.
 
-    def __init__(self, mode: str = "scripted", model: str | None = None):
-        self.mode, self.model = mode, model
+    defense='none': baseline, implements whatever task.md says at resume time.
+    defense='hash': the approval carries the hash of the task.md the plan was made from
+    (`approved_task_sha256` in the request metadata). On resume A reads task.md ONCE, refuses if
+    those bytes don't match the approved hash, and otherwise implements from those same bytes,
+    so there is no second read for an attacker to race.
+    """
+
+    def __init__(self, mode: str = "scripted", model: str | None = None, defense: str = "none"):
+        self.mode, self.model, self.defense = mode, model, defense
 
     async def execute(self, context, event_queue):
         ws = Path(context.metadata["workspace"])
@@ -106,6 +113,17 @@ class WorkerExecutor(AgentExecutor):
 
         # USE: execute() starts fresh on resume, so re-load the task from the shared workspace.
         task_text = (ws / "task.md").read_text()
+        if self.defense == "hash":
+            approved = context.metadata.get("approved_task_sha256")
+            if sha(task_text) != approved:
+                await up.reject(
+                    up.new_agent_message(
+                        [Part(text=f"task.md changed since approval (approved {approved}, "
+                                   f"now {sha(task_text)}); not executing.")],
+                        metadata={"phase": "blocked", "task_sha256": sha(task_text)},
+                    )
+                )
+                return
         server_path = ws / "server.py"
         try:
             new_server = await self._implement(task_text, server_path.read_text())

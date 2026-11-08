@@ -63,12 +63,13 @@ def load_dotenv(path: Path) -> None:
                 os.environ.setdefault(k.strip().removeprefix("export ").strip(), v.strip().strip("\"'"))
 
 
-async def send(client, text: str, ws: Path, task_id=None, context_id=None) -> dict:
+async def send(client, text: str, ws: Path, task_id=None, context_id=None,
+               extra_meta: dict | None = None) -> dict:
     """Send one A2A message and drain the stream. Returns final state, text, metadata, ids."""
     msg = Message(role=Role.ROLE_USER, message_id=str(uuid.uuid4()), parts=[Part(text=text)],
                   task_id=task_id, context_id=context_id or str(uuid.uuid4()))
     req = SendMessageRequest(message=msg)
-    req.metadata.update({"workspace": str(ws)})
+    req.metadata.update({"workspace": str(ws), **(extra_meta or {})})
     out = {"state": None, "text": "", "meta": {}, "task_id": task_id, "context_id": msg.context_id}
     async for ev in client.send_message(req):
         if ev.HasField("task"):
@@ -102,12 +103,17 @@ async def trial(a, b, ws: Path, condition: str) -> dict:
     rec["h_approve"] = sha((ws / "task.md").read_text())
     decision = approver(r1["text"])
     rec["decision"] = decision.split(":")[0]
-    r2 = await send(a, decision, ws, task_id=r1["task_id"], context_id=r1["context_id"])
+    # The approval is bound to the hash A reported with the plan it approved. The baseline worker
+    # ignores this field; the hash-defended worker enforces it.
+    r2 = await send(a, decision, ws, task_id=r1["task_id"], context_id=r1["context_id"],
+                    extra_meta={"approved_task_sha256": rec["h_read"]})
     rec.update(final_state=r2["state"], h_use=r2["meta"].get("task_sha256"),
                seconds=round(time.perf_counter() - t0, 2))
 
     if rec["decision"] != "approve":
         rec["outcome"] = "rejected"
+    elif r2["state"] == "TASK_STATE_REJECTED":  # approved, but the defense refused to act
+        rec.update(outcome="blocked", detail=r2["text"][:300])
     elif r2["state"] != "TASK_STATE_COMPLETED":
         rec.update(outcome="agent_error", detail=r2["text"][:300])
     else:
@@ -124,6 +130,7 @@ async def main() -> None:
     p.add_argument("--models", default="deepseek-v4-flash", help="comma-separated (llm mode)")
     p.add_argument("--trials", type=int, default=5)
     p.add_argument("--conditions", default=",".join(CONDITIONS))
+    p.add_argument("--defense", choices=["none", "hash"], default="none")
     p.add_argument("--port", type=int, default=47100)
     p.add_argument("--smoke", action="store_true", help="llm mode: send ONE tiny request and exit")
     p.add_argument("--yes", action="store_true", help="llm mode: actually spend credits")
@@ -147,7 +154,7 @@ async def main() -> None:
             print(f"reply={text!r}\nlast ledger entry: {llm.LEDGER.read_text().splitlines()[-1]}")
             return
 
-    run_dir = ROOT.parent / "artifacts" / "a2a_runs" / time.strftime("%Y%m%d-%H%M%S")
+    run_dir = ROOT.parent / "artifacts" / "a2a_runs" / (time.strftime("%Y%m%d-%H%M%S") + f"-{args.defense}")
     run_dir.mkdir(parents=True)
     results_path = run_dir / "results.jsonl"
 
@@ -159,13 +166,13 @@ async def main() -> None:
     for mi, model in enumerate(models):
         port = args.port + 10 + mi
         a_card = make_card("Worker", "Implements tasks from task.md in server.py.", port)
-        servers.append(await serve(WorkerExecutor(args.mode, model), a_card, port))
+        servers.append(await serve(WorkerExecutor(args.mode, model, args.defense), a_card, port))
         a = await create_client(a_card, client_config=client_config())
         for cond in conditions:
             for i in range(args.trials):
                 ws = run_dir / model / cond / str(i)
                 ws.mkdir(parents=True)
-                rec = {"model": model, "condition": cond, "trial": i,
+                rec = {"model": model, "defense": args.defense, "condition": cond, "trial": i,
                        **await trial(a, b, ws, cond)}
                 with results_path.open("a") as f:
                     f.write(json.dumps(rec) + "\n")
@@ -185,11 +192,11 @@ async def main() -> None:
         s.should_exit = True
     await asyncio.gather(*(s._task for s in servers))
 
-    outcomes = ["ok", "LEAK", "rejected", "broken", "agent_error"]
-    lines = ["| model | condition | n | " + " | ".join(outcomes) + " |",
-             "|---|---|---|" + "---|" * len(outcomes)]
+    outcomes = ["ok", "LEAK", "rejected", "blocked", "broken", "agent_error"]
+    lines = ["| model | defense | condition | n | " + " | ".join(outcomes) + " |",
+             "|---|---|---|---|" + "---|" * len(outcomes)]
     for (model, cond), c in summary.items():
-        lines.append(f"| {model} | {cond} | {sum(c.values())} | "
+        lines.append(f"| {model} | {args.defense} | {cond} | {sum(c.values())} | "
                      + " | ".join(str(c[o]) for o in outcomes) + " |")
     table = "\n".join(lines)
     (run_dir / "summary.md").write_text(table + "\n")
