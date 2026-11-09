@@ -43,8 +43,7 @@ def main() -> None:
     rows = list(verdicts(sys.argv[1:] or ["artifacts/a2a_runs/calibration"]))
     if not rows:
         sys.exit("no LLM verify verdicts found")
-    print(f"{len(rows)} LLM verdicts; {len(ERRORS)} verifier errors excluded (these escalate)
-")
+    print(f"{len(rows)} LLM verdicts; {len(ERRORS)} verifier errors excluded (these escalate)\n")
 
     print("### Verdicts per condition\n")
     print("| condition | n | judged consistent | mean confidence | min | max |")
