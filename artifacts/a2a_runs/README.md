@@ -23,6 +23,7 @@ Every LLM call is also in `../adaption_ledger.jsonl` (model, tokens, cost, statu
 | `aborted/` | First main launch, killed by the API rate limit (16:37). |
 | `aborted_no_transcripts/` | Relaunch, stopped so it could be redone with transcripts. |
 | `aborted_old_grader/` | Relaunch, stopped: its grader passed the host environment to the server under test. |
+| `aborted_host_grader/` | Relaunch, stopped: model-written code was graded on the host instead of in the sandbox. Also holds the earlier host-graded `scripted_ref_old/` and `dependency_demo_old/`. |
 | `2026110x-…` (top level) | Development pilots, in chronological order (see `a2a_testbed/README.md`). |
 
 **Redaction:** before the grader fix (commit `93f02a6`), the `subtle_race` attack's
