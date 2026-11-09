@@ -81,8 +81,8 @@ fall into. The Python SDK resumes an \texttt{INPUT\_REQUIRED} task by calling th
 \texttt{execute()} again from scratch, so a stateless agent naturally re-reads the shared
 workspace after approval, and that re-read is the ``use''. Our starting point was A2ABreak
 \cite{a2abreak}, which lists Concurrent Access TOCTOU (its finding~\#6) among eleven
-specification-level A2A vulnerabilities without demonstrating or mitigating it. We
-characterize it in executable workflows and evaluate runtime defenses.
+specification-level A2A vulnerabilities, with a state-machine trace and a proposed protocol fix
+in its artifact. We characterize it in executable workflows and evaluate runtime defenses.
 
 Locking the task, or rejecting any decision whose inputs changed, prevents the race but
 discards legitimate concurrent work: a wording fix or a corrected value should not kill an
@@ -120,17 +120,21 @@ exactly the verified content (Figure~\ref{fig:verification-architecture}).
 \section{Related Work}
 
 \paragraph{A2A security.}
-A2A's in-task authorization (\texttt{AUTH\_REQUIRED}/\texttt{INPUT\_REQUIRED}) leaves the scope
-and validity of an authorization to implementations or
-extensions\footnote{\href{https://a2a-protocol.org/latest/specification/\#76-in-task-authorization}{A2A specification (latest), \S7.6.4 In-Task Authorization Scope}, accessed November 8, 2026.}.
+A2A leaves the scope and validity of an \texttt{AUTH\_REQUIRED} authorization to
+implementations, credential issuers or
+extensions\footnote{\href{https://a2a-protocol.org/latest/specification/\#764-in-task-authorization-scope}{A2A specification, \S7.6.4 In-Task Authorization Scope}, in the unreleased main-branch (``latest'') text added after v1.0.1; accessed November 8, 2026.},
+and an \texttt{INPUT\_REQUIRED} reply carries no task version or conditional write
+\cite{a2abreak}.
 A2ASecBench \cite{a2asecbench} benchmarks six concrete attacks spanning all A2A stages, but not
 concurrent stale decisions. A2ABreak \cite{a2abreak} models the
 specification as a state machine and reports eleven vulnerabilities. Its finding~\#6,
-Concurrent Access TOCTOU (spec \S3.1.1, \S4.1), is listed without a worked attack or
-mitigation; it is the vulnerability we execute and defend.
+Concurrent Access TOCTOU (spec \S3.1.1, \S4.1), appears in its results table; the authors'
+artifact adds a state-machine trace and proposes task versioning with conditional writes, but
+neither is executed or evaluated. We execute the race and evaluate defenses that need no
+protocol change.
 
 \paragraph{Concurrency control.}
-File-system TOCTOU is mitigated by acting on content or handles rather than names
+File-system TOCTOU is mitigated by operating on file descriptors rather than path names
 \cite{bishop-toctou}. Optimistic concurrency control validates at commit that what a
 transaction read is unchanged \cite{kung-occ}; our \texttt{hash} defense is OCC applied to an
 approval. CoAgent \cite{coagent} uses LLM judgments of whether conflicting writes invalidate a
@@ -403,7 +407,7 @@ A2A Project. \emph{Agent2Agent (A2A) Protocol Specification}, v1.0.0.
 \url{https://a2a-protocol.org/v1.0.0/specification/}
 
 \bibitem{a2abreak}
-Lotfi, A., Rahman, M. M., Karim, I., \& Bertino, E. (2026). \emph{A2ABreak: Systematic Security Analysis of the A2A Protocol}. 42nd Annual Computer Security Applications Conference (ACSAC '26). arXiv:2609.10871.
+Lotfi, A., Rahman, M. M., Karim, I., \& Bertino, E. (2026). \emph{A2ABreak: Systematic Security Analysis of the A2A Protocol}. 42nd IEEE Annual Computer Security Applications Conference (ACSAC '26), to appear. arXiv:2609.10871. Artifact: \url{https://github.com/arlotfi79/A2ABreak}.
 \url{https://arxiv.org/abs/2609.10871}
 
 \bibitem{a2asecbench}
@@ -423,7 +427,7 @@ Lyu, Y., Ren, Y., Lai, R., \& Liu, W. (2026). \emph{From Version Conflicts to De
 \url{https://arxiv.org/abs/2609.08015}
 
 \bibitem{bishop-toctou}
-Bishop, M., \& Dilger, M. (1996). Checking for race conditions in file accesses. \emph{Computing Systems}, 9(2), 131ff.
+Bishop, M., \& Dilger, M. (1996). Checking for race conditions in file accesses. \emph{Computing Systems}, 9(2), 131--152.
 \url{https://www.usenix.org/legacy/publications/compsystems/1996/spr_bishop.pdf}
 
 \bibitem{kung-occ}
@@ -435,7 +439,7 @@ Greshake, K., Abdelnabi, S., Mishra, S., Endres, C., Holz, T., \& Fritz, M. (202
 \url{https://doi.org/10.1145/3605764.3623985}
 
 \bibitem{basharena}
-Redwood Research. \emph{BashArena}. \url{https://github.com/redwoodresearch/basharena_public}
+Kaufman, A., Lucassen, J., Tracy, T., Rushing, C., \& Bhatt, A. (2025). \emph{BashArena: A Control Setting for Highly Privileged AI Agents}. arXiv:2512.15688. Code and tasks: \url{https://github.com/redwoodresearch/basharena_public}
 
 \end{thebibliography}
 
@@ -716,6 +720,6 @@ We used Claude (via Claude Code) extensively. It helped design and implement the
 defenses, sandbox, validator and analysis scripts; it ran and monitored the experiments; and
 it drafted much of this report. We reviewed the work throughout. Every number in this report is
 computed by scripts from the committed trial records, every run passes the automated validator,
-and every reference was supplied or checked by the team.
+and every reference was checked against its primary source.
 
 \end{document}
