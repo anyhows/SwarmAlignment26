@@ -1,0 +1,73 @@
+% Conceptual proposal: version tokens are supplied by the application/store.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily\fontsize{8}{10}\selectfont,text=figink]
+  \node[font=\sffamily\small\bfseries] at (8.2,.85)
+    {Semantic Decision Verification with Atomic, Dependency-Aware Commit};
+  \fill[figbluefill!55,rounded corners=3pt] (0,.15) rectangle (12.25,-2.9);
+  \fill[figtealfill!70,rounded corners=3pt] (0,-3.2) rectangle (12.25,-5.8);
+  \fill[figtealfill!70,rounded corners=3pt] (0,-6.1) rectangle (16.4,-12.9);
+  \fill[figredfill!65,rounded corners=3pt] (12.6,.15) rectangle (16.4,-5.8);
+  \node[anchor=west,font=\sffamily\footnotesize\bfseries,text=figgray]
+    at (.25,-.25) {AGENT LAYER};
+  \node[anchor=west,font=\sffamily\footnotesize\bfseries,text=figteal]
+    at (.25,-3.55) {VERIFICATION LAYER};
+  \node[anchor=west,font=\sffamily\footnotesize\bfseries,text=figteal]
+    at (.25,-6.45) {TRUSTED EXECUTION LAYER};
+
+  \node[figbox,text width=2.85cm,minimum height=1.25cm] (snapshot) at (1.95,-1.5)
+    {\textbf{Versioned snapshot}\\Task, policy, resources\\Version tokens};
+  \node[figbox,text width=2.85cm,minimum height=1.25cm] (decision) at (6.05,-1.5)
+    {\textbf{Agent A}\\Decision + explicit\\candidate conditions};
+  \node[figbox,text width=2.85cm,minimum height=1.25cm] (writes) at (10.15,-1.5)
+    {\textbf{Prepare action}\\Exact action identity\\+ proposed writes};
+  \draw[figarrow,figgray] (snapshot)--(decision);
+  \draw[figarrow,figgray] (decision)--(writes);
+  \node[align=center,text=figgray] at (6.1,-2.55)
+    {Reasoning, verification, and preparation hold no long-running lock on shared state.};
+
+  \node[figbox,draw=figred,fill=figredfill,text=figred,text width=2.65cm,
+    minimum height=1.25cm] (concurrent) at (14.25,-1.5)
+    {\textbf{Agent B /}\\\textbf{Concurrent Updates}\\Independent activity};
+  \node[figtrusted,text width=3.1cm,minimum height=1.45cm] (store) at (14.25,-8.2)
+    {\textbf{Authoritative state store}\\Task, policy, resources\\Current values\\+ version tokens};
+  \draw[figarrow,figred,line width=1pt] (concurrent.south)--(store.north)
+    node[pos=.44,figlabel,text=figred,text width=2.2cm,fill=figredfill!65]
+    {Task / policy /\\resource updates};
+
+  \node[figtrusted,text width=3.65cm,minimum height=1.3cm] (verifier) at (4.35,-4.75)
+    {\textbf{Independent LLM verifier}\\Check condition coverage\\and validity against evidence};
+  \node[figtrusted,text width=3.4cm,minimum height=1.3cm] (dependencies) at (9.45,-4.75)
+    {\textbf{Approval dependencies}\\Checked conditions\\+ evidence\\Version tokens};
+  \draw[figarrow,figteal] (decision.south)--(6.05,-3.05)-|(verifier.north);
+  \draw[figarrow,figteal] (verifier)--(dependencies);
+
+  \node[figtrusted,line width=1.15pt,text width=6.2cm,minimum height=1.8cm]
+    (gate) at (7.3,-8.2)
+    {\textbf{Atomic-commit gate}\\[3pt]
+      Recheck conditions against current state.\\
+      Check tokens and write compatibility.\\[3pt]
+      \textbf{Bind validation and effects atomically.}};
+  \draw[figarrow,figteal] (dependencies.south)--(9.45,-6.8)-|(gate.north);
+  \draw[figarrow,figgray] (writes.east)--(12,-1.5)--(12,-7.05)
+    -|(gate.north east);
+  \node[figlabel,text=figgray] at (11.9,-6.7) {Proposed writes};
+  \draw[figarrow,figteal] (store.west)--(gate.east)
+    node[midway,figlabel,text=figteal] {Current state};
+  \node[align=center,text=figteal] at (7.3,-9.65)
+    {Atomic release};
+
+  \node[figbox,draw=figgreen,fill=figgreenfill,text=figgreen,text width=5.3cm,
+    minimum height=1.4cm] (commit) at (4.1,-11.25)
+    {\textbf{COMMIT}\\Conditions still hold;\\proposed writes are compatible};
+  \node[figbox,draw=figred,fill=figredfill,text=figred,text width=5.3cm,
+    minimum height=1.4cm] (reject) at (11.5,-11.25)
+    {\textbf{Reject / revalidate / regenerate}\\Conditions invalidated\\or conflicting write};
+  \draw[figarrow,figgreen,line width=1.2pt] (5.7,-9.1)--(5.7,-10.2)
+    -|(commit.north);
+  \draw[figarrow,figred,line width=1.2pt] (8.9,-9.1)--(8.9,-10.2)
+    -|(reject.north);
+  \node[align=center,text=figgray,text width=15.7cm] at (8.2,-12.5)
+    {Independent updates proceed; only relevant invalidations or write conflicts block this action.};
+  \node[align=center,text=figgray,text width=16cm] at (8.2,-13.5)
+    {Atomicity must cover every approval dependency and the proposed effects.\\
+      Snapshot/version metadata are application mechanisms; the verifier does not itself commit effects.};
+\end{tikzpicture}

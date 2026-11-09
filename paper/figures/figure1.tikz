@@ -1,0 +1,55 @@
+% Sequence follows the Figure 1 brief; S1/S2 are illustrative labels only.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\fontsize{9}{11}\selectfont,text=figink]
+  \node[font=\bfseries] at (8.15,.95)
+    {Concurrent A2A Task Modification Causes Stale-State Execution};
+  \node[figbox,fill=white,minimum width=2.5cm] at (1.25,0)
+    {\textbf{Agent A}\\(honest)};
+  \node[figbox,draw=figred,fill=figredfill,text=figred,minimum width=2.5cm]
+    at (5.65,0) {\textbf{Agent B}\\(malicious)};
+  \node[figbox,fill=white,minimum width=2.6cm] at (10.45,0)
+    {\textbf{A2A Task Server}};
+  \node[figbox,fill=white,minimum width=2.6cm] at (15.05,0)
+    {\textbf{Action / Resource}};
+  \foreach \x in {1.25,10.45,15.05}
+    \draw[dashed,figgray,line width=.8pt] (\x,-.5)--(\x,-11.95);
+  \draw[dashed,figred,line width=.8pt] (5.65,-.5)--(5.65,-11.95);
+
+  \node[figbox,fill=white,inner sep=4pt] at (10.45,-1)
+    {Task T: state S1};
+  \draw[figarrow,figink] (10.45,-1.85)--(1.25,-1.85)
+    node[midway,figlabel,above=2pt]
+    {\textbf{1}\quad \texttt{input-required}, task T, question Q1};
+  \node[figbox,text width=3.3cm,fill=white] at (1.65,-2.75)
+    {\textbf{2}\quad Reads Q1\\Prepares answer\\using S1};
+
+  \draw[figarrow,figred] (5.65,-3.85)--(10.45,-3.85)
+    node[midway,figlabel,above=2pt,text=figred,text width=4.1cm]
+    {\textbf{3}\quad Valid A2A message:\\change relevant context};
+  \node[figbox,draw=figred,fill=figredfill,text=figred,text width=3.6cm]
+    at (10.45,-4.7) {\textbf{4}\quad Update S1 $\rightarrow$ S2\\request new input Q2};
+  \draw[figarrow,figred] (10.45,-5.7)--(1.25,-5.7)
+    node[midway,figlabel,above=2pt,text=figred]
+    {\texttt{input-required}, task T, question Q2};
+  \node[figbox,draw=figred,fill=figredfill,inner sep=5pt,text width=8.5cm]
+    at (5.85,-6.4)
+    {\textbf{Same task T; same lifecycle status}\\\textbf{Different content: Q1 $\ne$ Q2}};
+
+  \draw[figarrow,figorange,line width=1.2pt] (1.25,-8.05)--(10.45,-8.05)
+    node[midway,figlabel,above=2pt,text=figorange,text width=8.5cm]
+    {\textbf{5}\quad Answer intended for Q1, referencing task T\\
+      Honest answer based on S1; current task state is S2};
+  \node[figbox,draw=figred,fill=figredfill,text width=5cm]
+    at (10.45,-9.15)
+    {\textbf{6}\quad Response accepted\\
+      \textcolor{figred}{\textbf{No revision-bound acceptance check}}};
+
+  \fill[figredfill,rounded corners=3pt] (9.85,-10.15) rectangle (16.3,-11.75);
+  \draw[figarrow,figred,line width=1.3pt] (10.45,-10.8)--(15.05,-10.8)
+    node[midway,figlabel,fill=figredfill,above=2pt,text=figred]
+    {\textbf{7}\quad Apply stale decision};
+  \node[text=figred,font=\fontsize{9}{11}\selectfont\bfseries,align=center,text width=6cm] at (13.08,-11.35)
+    {Violation: decision for S1\\applied to S2};
+  \node[fignote,text width=15.7cm] at (8.15,-12.55)
+    {Time flows downward. S1/S2 denote illustrative states, not A2A fields.\\
+      The response need not be malicious: the mismatch is between observed and applied state.};
+\end{tikzpicture}

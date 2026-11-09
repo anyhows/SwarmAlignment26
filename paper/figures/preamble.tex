@@ -1,0 +1,22 @@
+% Shared, editable vector-figure styles. No shell escape or external assets.
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning}
+\definecolor{figink}{HTML}{253440}
+\definecolor{figgray}{HTML}{667784}
+\definecolor{figbluefill}{HTML}{EDF2F6}
+\definecolor{figteal}{HTML}{087F83}
+\definecolor{figtealfill}{HTML}{E9F5F3}
+\definecolor{figred}{HTML}{B82D37}
+\definecolor{figredfill}{HTML}{FDEBED}
+\definecolor{figorange}{HTML}{AD5800}
+\definecolor{figorangefill}{HTML}{FFF2DF}
+\definecolor{figgreen}{HTML}{237A46}
+\definecolor{figgreenfill}{HTML}{EAF5EC}
+\tikzset{
+  figarrow/.style={-{Latex[length=2.4mm,width=1.7mm]},line width=.9pt},
+  figbox/.style={draw=figgray,fill=figbluefill,rounded corners=2pt,
+    align=center,inner sep=6pt,line width=.65pt},
+  figtrusted/.style={figbox,draw=figteal,fill=figtealfill},
+  figlabel/.style={fill=white,inner sep=3pt,align=center},
+  fignote/.style={align=center,font=\footnotesize,text=figgray}
+}
