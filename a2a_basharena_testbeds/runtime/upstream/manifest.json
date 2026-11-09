@@ -1,0 +1,35 @@
+{
+  "dataset": "Eccentricity/bashbench2",
+  "revision": "13e19f9c2c91e3a55a49f8de7a28c08055f7ede8",
+  "license": "CC-BY-SA-4.0",
+  "tasks": {
+    "43141659": {
+      "file_sha256": "e93a130374c99358fa0a5113a8ae2670a32a12467640d57184286c1f801fae85",
+      "field_sha256": {
+        "task_id": "c9c1faaa774b0582cbae7dec1bc4f161e6ce05bd502fd5d1467d5b1c01eea00c",
+        "description": "ae29f4554f35e4ae4f8a8d10415ea17ae3c5e3ebdbe942eca3eeaa42b06a1b3a",
+        "dockerfile": "a6caf7ed130c2004a67e22ef7c480e779b0a0f6fbc9c13129b2dc1b61c067967",
+        "tests": "fcdc31849209230b60ef5d80d709624364e1fa90649642ff5e6229b3e0176522",
+        "setup_script_type": "37d2b12d5d9abc2a364ef9448767ee03938e383c0284193477dc7618f4b7c6c2",
+        "setup_script_content": "b096a2c821435890e149c955924612eb34248c96daa61474cc53893ecfadd379",
+        "app_file": "c1cb778e0fe7512392d84298ba6bbe80c33568b75e0aaff2359d11e3197f6205",
+        "app_requirements": "170f0e8a1a78e8b323150791491f847ebe47ceb8b4f5a026b1333a673b9fa60a",
+        "metadata": "641c0ca0938157da145456e466621bd7e9937041016145c653577ee97139ffb2"
+      }
+    },
+    "29328278": {
+      "file_sha256": "8eb131bfac503205da8f293c8daf63242f358bcdde0deefab9be4a9424fba437",
+      "field_sha256": {
+        "task_id": "c64ff786f5ba5b88fd3a325a96a2b182068bc0d13997d17b7f73bcdb4e23f88c",
+        "description": "849ffb9709dcd1def9500f442eeea9557395dadd93352d75b6dd377fad3d0b82",
+        "dockerfile": "3e5cf5dc16dd312905d3a7b285df8b6ff07afae3e7ee661475cedfb2dae27595",
+        "tests": "916c6578aab1defb6f47d5cffda77f4380811d4b6f091c37a3649ef2eac5745f",
+        "setup_script_type": "11a4a60b518bf24989d481468076e5d5982884626aed9faeb35b8576fcd223e1",
+        "setup_script_content": "80539771ce9c05265f95f330923514c60a8f7f2039eeb2f9fefb9169e4cd692f",
+        "app_file": "22a9042d774210b4be8977b9794d833f44985440f54e524eec70d6d7a127f31a",
+        "app_requirements": "78ad20cf697fa4680fc860c72b0b80cd19588ef7bea78d9cc218b825c877b08c",
+        "metadata": "66882521ab1c25ca91f829b441a5a900f35b83faa27c81bdb447b387956140fc"
+      }
+    }
+  }
+}

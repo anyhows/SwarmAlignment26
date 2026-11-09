@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/anyhows/a2a-python",
+  "commit": "28f8a62f25d46067ae846329a42a60c820fa927e",
+  "paths": [
+    "src/a2a",
+    "pyproject.toml",
+    "LICENSE"
+  ],
+  "modifications": "none"
+}

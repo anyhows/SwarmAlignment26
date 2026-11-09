@@ -1,0 +1,142 @@
+name: swarm-a2a-basharena
+
+x-service: &service
+  image: swarm-a2a-basharena:local
+  build:
+    context: .
+    dockerfile: Dockerfile
+  init: true
+  read_only: true
+  tmpfs:
+    - /tmp
+  networks:
+    - pipeline
+
+x-agent-health: &agent-health
+  test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8200/health', timeout=2)"]
+  interval: 3s
+  timeout: 3s
+  retries: 20
+
+x-executor: &executor
+  <<: *service
+  environment:
+    BASHARENA_ENGINE: ${BASHARENA_ENGINE:-scripted}
+    BASHARENA_MODEL: ${BASHARENA_MODEL:-deepseek-v4-flash}
+    ADAPTION_ENABLE_CALLS: ${ADAPTION_ENABLE_CALLS:-0}
+    ADAPTION_API_KEY: ${ADAPTION_API_KEY:-}
+    ADAPTION_API_BASE: ${ADAPTION_API_BASE:-https://api.prod.adaptionlabs.ai}
+    ADAPTION_ALLOWED_MODELS: ${ADAPTION_ALLOWED_MODELS:-deepseek-v4-flash}
+    ADAPTION_LEDGER_DB: /budget/adaption-budget.sqlite3
+    ADAPTION_MAX_CALLS: ${ADAPTION_MAX_CALLS:-20}
+    ADAPTION_LEDGER_MAX_CALLS: ${ADAPTION_LEDGER_MAX_CALLS:-60}
+  depends_on:
+    reviewer:
+      condition: service_healthy
+  healthcheck: *agent-health
+
+services:
+  seed:
+    <<: *service
+    command: ["seed", "--root", "/data"]
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}:/data
+
+  reviewer:
+    <<: *service
+    command: ["serve", "--role", "reviewer", "--root", "/data", "--host", "0.0.0.0", "--port", "8200"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    healthcheck: *agent-health
+    ports:
+      - "127.0.0.1:${REVIEWER_PORT:-47200}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/shared:/data/shared:ro
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/policy:/data/policy:ro
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/reviews:/data/reviews
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/logs:/data/logs
+
+  medium-vulnerable:
+    <<: *executor
+    command: ["serve", "--role", "executor", "--case", "medium", "--mode", "vulnerable", "--root", "/data", "--host", "0.0.0.0", "--port", "8200", "--reviewer-url", "http://reviewer:8200"]
+    ports:
+      - "127.0.0.1:${MEDIUM_CURRENT_PORT:-47201}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/shared:/data/shared:ro
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/outputs/medium/vulnerable:/data/outputs/medium/vulnerable
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/logs:/data/logs
+      - ${BUDGET_DIR:?use manage.py or run.py to set BUDGET_DIR}:/budget
+
+  medium-fixed:
+    <<: *executor
+    command: ["serve", "--role", "executor", "--case", "medium", "--mode", "fixed", "--root", "/data", "--host", "0.0.0.0", "--port", "8200", "--reviewer-url", "http://reviewer:8200"]
+    ports:
+      - "127.0.0.1:${MEDIUM_FIXED_PORT:-47202}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/outputs/medium/fixed:/data/outputs/medium/fixed
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/logs:/data/logs
+      - ${BUDGET_DIR:?use manage.py or run.py to set BUDGET_DIR}:/budget
+
+  hard-vulnerable:
+    <<: *executor
+    command: ["serve", "--role", "executor", "--case", "hard", "--mode", "vulnerable", "--root", "/data", "--host", "0.0.0.0", "--port", "8200", "--reviewer-url", "http://reviewer:8200"]
+    ports:
+      - "127.0.0.1:${HARD_CURRENT_PORT:-47203}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/shared:/data/shared:ro
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/outputs/hard/vulnerable:/data/outputs/hard/vulnerable
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/logs:/data/logs
+      - ${BUDGET_DIR:?use manage.py or run.py to set BUDGET_DIR}:/budget
+
+  hard-fixed:
+    <<: *executor
+    command: ["serve", "--role", "executor", "--case", "hard", "--mode", "fixed", "--root", "/data", "--host", "0.0.0.0", "--port", "8200", "--reviewer-url", "http://reviewer:8200"]
+    ports:
+      - "127.0.0.1:${HARD_FIXED_PORT:-47204}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/outputs/hard/fixed:/data/outputs/hard/fixed
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/logs:/data/logs
+      - ${BUDGET_DIR:?use manage.py or run.py to set BUDGET_DIR}:/budget
+
+  config-api:
+    <<: *service
+    command: ["repository", "--case", "medium", "--root", "/data", "--host", "0.0.0.0", "--port", "8200"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${CONFIG_API_PORT:-47205}:8200"
+    healthcheck:
+      <<: *agent-health
+      test: ["CMD", "python", "-c", "import urllib.request; r=urllib.request.Request('http://127.0.0.1:8200/', headers={'X-API-Key':'local-fixture-key'}); urllib.request.urlopen(r, timeout=2)"]
+
+  plugin-api:
+    <<: *service
+    command: ["repository", "--case", "hard", "--root", "/data", "--host", "0.0.0.0", "--port", "8200"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${PLUGIN_API_PORT:-47206}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/repository/plugin_data:/data/repository/plugin_data:ro
+    healthcheck: *agent-health
+
+  collaborator:
+    <<: *service
+    command: ["serve", "--role", "collaborator", "--root", "/data", "--host", "0.0.0.0", "--port", "8200"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${COLLABORATOR_PORT:-47207}:8200"
+    volumes:
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/shared:/data/shared
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/policy:/data/policy:ro
+      - ${STATE_DIR:?use manage.py or run.py to set STATE_DIR}/logs:/data/logs
+    healthcheck: *agent-health
+
+networks:
+  pipeline:
+    driver: bridge
