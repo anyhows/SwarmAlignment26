@@ -30,7 +30,7 @@ The initial server is deliberately broken. The assignment is to repair:
 - A periodic monitor that notices both a running and a stopped application.
 - Connection logging to the simulated database.
 
-The full assignment is [task.txt](vendor/basharena/data/tasks/10_3_all/38868061/task.txt).
+The full assignment is [task.txt](../vendor/basharena/data/tasks/10_3_all/38868061/task.txt).
 The upstream wording treats database integration as optional extra credit; this
 wrapper's acceptance checks require it. A healthy Docker container therefore
 does **not** mean the assignment is complete: infrastructure readiness and repair
@@ -205,12 +205,12 @@ can translate recipe failures to its own exit code 2. Use
 | File or directory | Role |
 |---|---|
 | [README.md](README.md) | Quick start, command reference, acceptance criteria, and trust boundaries. |
-| [TESTBED_GUIDE.md](TESTBED_GUIDE.md) | This implementation walkthrough and file map. |
-| [overall-goals.md](overall-goals.md) | Broader research direction; not an executable testbed configuration. |
-| [ADAPTION_LLM_ENDPOINTS.md](ADAPTION_LLM_ENDPOINTS.md) | Separate model-provider endpoint notes. The testbed does not call those endpoints. |
-| [Makefile](Makefile) | Thin entry point: forwards each target name to `testbed/runner.py`. |
-| [.dockerignore](.dockerignore) | Limits the Docker build context to testbed and vendored BashArena files. |
-| [.gitignore](.gitignore) | Excludes local `.env`, generated state/evidence, and Python caches from Git. |
+| [GUIDE.md](GUIDE.md) | This implementation walkthrough and file map. |
+| [overall-goals.md](../docs/overall-goals.md) | Broader research direction; not an executable testbed configuration. |
+| [adaption-llm-endpoints.md](../docs/adaption-llm-endpoints.md) | Separate model-provider endpoint notes. The testbed does not call those endpoints. |
+| [Makefile](../Makefile) | Thin entry point: forwards each target name to `testbed/runner.py`. |
+| [.dockerignore](../.dockerignore) | Limits the Docker build context to testbed and vendored BashArena files. |
+| [.gitignore](../.gitignore) | Excludes local `.env`, generated state/evidence, and Python caches from Git. |
 | `.env` (local, ignored) | Existing local environment values; not loaded by testbed Compose or copied into images. |
 | `.testbed/` (generated, ignored) | Host control state, including active episode, latest build manifest, and runner lock. |
 | `artifacts/` (generated, ignored) | Persistent build records, episode evidence, results, archives, and verification reports. |
@@ -219,27 +219,27 @@ can translate recipe failures to its own exit code 2. Use
 
 | File | Role |
 |---|---|
-| [testbed/runner.py](testbed/runner.py) | Main host controller: build/start/status, secret snapshots, Docker helpers, repair, probes, grading/history, archive/reset/down, and verification controls. |
-| [testbed/compose.yaml](testbed/compose.yaml) | Six services, network topology, capabilities, health checks, and localhost publication. |
-| [testbed/os.Dockerfile](testbed/os.Dockerfile) | Digest-pinned Ubuntu plus OS tools and native build dependencies. |
-| [testbed/common.Dockerfile](testbed/common.Dockerfile) | Generated shared Python dependency layer. |
-| [testbed/base.Dockerfile](testbed/base.Dockerfile) | Generated upstream filesystem/user layer, including synthetic credential fixtures. |
-| [testbed/target.Dockerfile](testbed/target.Dockerfile) | Generated broken application/task layer; runs upstream setup during build. |
-| [testbed/services.Dockerfile](testbed/services.Dockerfile) | Packages original receiver, marker, and selected database apps plus networking helpers. |
-| [testbed/target-start.sh](testbed/target-start.sh) | Sets target routing/NAT and TCP loopback exemptions, backs up firewall config, and starts Supervisor. |
-| [testbed/router-start.sh](testbed/router-start.sh) | Creates simulated destination addresses/redirects, removes the router default route, and disables forwarding. |
-| [testbed/edge-start.sh](testbed/edge-start.sh) | Restricts relay networking, drops privileges/capabilities, and launches the proxy. |
-| [testbed/tcp-proxy.py](testbed/tcp-proxy.py) | Byte-stream relay from port 8000 to target port 80, preserving WebSocket traffic. |
-| [testbed/supervisord.conf](testbed/supervisord.conf) | Starts/supervises the upstream firewall daemon. Does not solve or launch the broken application. |
-| [testbed/fixtures/app.env](testbed/fixtures/app.env) | Synthetic `/home/app/.env` missing from the public archive but referenced by its leak detector. |
-| [testbed/requirements.in](testbed/requirements.in) | Maintainer's direct Python dependency inputs. |
-| [testbed/requirements.lock](testbed/requirements.lock) | Resolved Python versions and hashes consumed by normal builds. |
-| [testbed/build-requirements.lock](testbed/build-requirements.lock) | Hash-locked bootstrap tools needed before building Python native dependencies. |
-| [testbed/update-lock.py](testbed/update-lock.py) | Explicit dependency refresh using a temporary resolver container; requires network access. Not part of startup/reset. |
-| [testbed/render.py](testbed/render.py) | Regenerates common/base/target Dockerfiles, patched upstream tests, and reviewable diffs from unchanged vendor sources. Runs during build. |
-| [testbed/patches/README.md](testbed/patches/README.md) | Explains integration differences from upstream. |
+| [testbed/runner.py](runner.py) | Main host controller: build/start/status, secret snapshots, Docker helpers, repair, probes, grading/history, archive/reset/down, and verification controls. |
+| [testbed/compose.yaml](compose.yaml) | Six services, network topology, capabilities, health checks, and localhost publication. |
+| [testbed/os.Dockerfile](os.Dockerfile) | Digest-pinned Ubuntu plus OS tools and native build dependencies. |
+| [testbed/common.Dockerfile](common.Dockerfile) | Generated shared Python dependency layer. |
+| [testbed/base.Dockerfile](base.Dockerfile) | Generated upstream filesystem/user layer, including synthetic credential fixtures. |
+| [testbed/target.Dockerfile](target.Dockerfile) | Generated broken application/task layer; runs upstream setup during build. |
+| [testbed/services.Dockerfile](services.Dockerfile) | Packages original receiver, marker, and selected database apps plus networking helpers. |
+| [testbed/target-start.sh](target-start.sh) | Sets target routing/NAT and TCP loopback exemptions, backs up firewall config, and starts Supervisor. |
+| [testbed/router-start.sh](router-start.sh) | Creates simulated destination addresses/redirects, removes the router default route, and disables forwarding. |
+| [testbed/edge-start.sh](edge-start.sh) | Restricts relay networking, drops privileges/capabilities, and launches the proxy. |
+| [testbed/tcp-proxy.py](tcp-proxy.py) | Byte-stream relay from port 8000 to target port 80, preserving WebSocket traffic. |
+| [testbed/supervisord.conf](supervisord.conf) | Starts/supervises the upstream firewall daemon. Does not solve or launch the broken application. |
+| [testbed/fixtures/app.env](fixtures/app.env) | Synthetic `/home/app/.env` missing from the public archive but referenced by its leak detector. |
+| [testbed/requirements.in](requirements.in) | Maintainer's direct Python dependency inputs. |
+| [testbed/requirements.lock](requirements.lock) | Resolved Python versions and hashes consumed by normal builds. |
+| [testbed/build-requirements.lock](build-requirements.lock) | Hash-locked bootstrap tools needed before building Python native dependencies. |
+| [testbed/update-lock.py](update-lock.py) | Explicit dependency refresh using a temporary resolver container; requires network access. Not part of startup/reset. |
+| [testbed/render.py](render.py) | Regenerates common/base/target Dockerfiles, patched upstream tests, and reviewable diffs from unchanged vendor sources. Runs during build. |
+| [testbed/patches/README.md](patches/README.md) | Explains integration differences from upstream. |
 | `testbed/patches/base.diff`, `target.diff`, `tests.diff` | Generated review artifacts showing exactly how the base image, task image, and original tests differ. |
-| [testbed/VALIDATION.md](testbed/VALIDATION.md) | Recorded host, measured checks/reset times, evidence references, and limitations. |
+| [testbed/VALIDATION.md](VALIDATION.md) | Recorded host, measured checks/reset times, evidence references, and limitations. |
 
 Generated Dockerfiles/tests/diffs should be changed through `render.py` and their
 source inputs; direct edits can be overwritten on the next build.
@@ -248,11 +248,11 @@ source inputs; direct edits can be overwritten on the next build.
 
 | File | Role |
 |---|---|
-| [testbed/reference/socketio_server.py](testbed/reference/socketio_server.py) | Known legitimate solution: authentication, eventlet, namespaces, echo, broadcasts, logs, and connection-record requests. |
-| [testbed/reference/nginx.conf](testbed/reference/nginx.conf) | Working HTTP/WebSocket proxy to port 8080. |
-| [testbed/reference/socketio-monitor.sh](testbed/reference/socketio-monitor.sh) | Checks application port every five seconds and writes UP/DOWN log entries. |
-| [testbed/grading/test_upstream.py](testbed/grading/test_upstream.py) | Generated original 12-test suite with the one-line `global successful_connections` correction. |
-| [testbed/grading/functional.py](testbed/grading/functional.py) | Eight independent network-level checks, emitting structured JSON from a trusted helper container. |
+| [testbed/reference/socketio_server.py](reference/socketio_server.py) | Known legitimate solution: authentication, eventlet, namespaces, echo, broadcasts, logs, and connection-record requests. |
+| [testbed/reference/nginx.conf](reference/nginx.conf) | Working HTTP/WebSocket proxy to port 8080. |
+| [testbed/reference/socketio-monitor.sh](reference/socketio-monitor.sh) | Checks application port every five seconds and writes UP/DOWN log entries. |
+| [testbed/grading/test_upstream.py](grading/test_upstream.py) | Generated original 12-test suite with the one-line `global successful_connections` correction. |
+| [testbed/grading/functional.py](grading/functional.py) | Eight independent network-level checks, emitting structured JSON from a trusted helper container. |
 
 The remaining detectors, localhost probe, monitoring control, and classification
 logic are in `runner.py`. Reference files are installed **only** by `make repair`;
@@ -318,7 +318,7 @@ are for the evaluator, not agent input. New clones regenerate their own evidence
 Run `make verify` for disposable episodes covering the broken baseline,
 reference repair, positive/negative controls for every outcome detector, invalid
 probe handling, persistent detection history, and three dirty-state reset cycles.
-It leaves the active episode alone. See [VALIDATION.md](testbed/VALIDATION.md) for
+It leaves the active episode alone. See [VALIDATION.md](VALIDATION.md) for
 the measured results, including approximately 31–32 second resets on the tested
 host and separate clean-export/archive-failure checks.
 
