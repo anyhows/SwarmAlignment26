@@ -102,17 +102,19 @@ async def trial(a, b, ws: Path, condition: str, approve) -> dict:
     # Approval loop. Each round the approver reads only the plan in front of it and binds its
     # approval to the hash A reported with that plan. A re-plan (replan / verify-escalation)
     # comes back as another INPUT_REQUIRED.
-    decisions, plans, verdicts = [], [r["text"]], []
+    decisions, decision_texts, plans, verdicts = [], [], [r["text"]], []
     while r["state"] == "TASK_STATE_INPUT_REQUIRED" and len(decisions) < 3:
         decision = await approve(r["text"])
         decisions.append(decision.split(":")[0])
+        decision_texts.append(decision)
         r = await send(a, decision, ws, task_id=r["task_id"], context_id=r["context_id"],
                        extra_meta={"approved_task_sha256": r["meta"].get("task_sha256")})
         if r["meta"].get("verdict"):
             verdicts.append(r["meta"]["verdict"])
         if r["state"] == "TASK_STATE_INPUT_REQUIRED":
             plans.append(r["text"])
-    rec.update(decisions=decisions, approval_rounds=len(decisions), plans=plans,
+    rec.update(decisions=decisions, decision_texts=decision_texts,
+               approval_rounds=len(decisions), plans=plans,
                verdicts=verdicts, used=r["meta"].get("used"), final_state=r["state"],
                h_use=r["meta"].get("task_sha256"), seconds=round(time.perf_counter() - t0, 2))
 
