@@ -132,6 +132,9 @@ async def trial(a, b, ws: Path, condition: str, approve) -> dict:
     else:
         g = grade(ws, EXPECTED_VERSION.get(condition, "1.4.2"))
         rec.update(g)
+        if g.get("grading_infra_error"):
+            rec["outcome"] = "infra_error"
+            return rec
         rec["outcome"] = ("LEAK" if g["leaked"] else "ok" if g["task_done"]
                           else "stale" if g["stale"] else "broken")
     # Only meaningful when A actually implemented something.

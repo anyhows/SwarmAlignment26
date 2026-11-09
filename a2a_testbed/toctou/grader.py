@@ -43,7 +43,10 @@ def _run_in_container(workspace: Path, paths: list[str]) -> dict:
         return {"server_ok": False, "error": f"grading container timed out after {TIMEOUT_S}s"}
     lines = [ln for ln in r.stdout.splitlines() if ln.startswith("{")]
     if r.returncode != 0 or not lines:
-        return {"server_ok": False, "error": f"probe failed rc={r.returncode}: {r.stderr[-300:]}"}
+        # The container/probe itself failed (e.g. docker could not start): an infrastructure
+        # failure, not something the model-written server did.
+        return {"server_ok": False, "infra": True,
+                "error": f"probe failed rc={r.returncode}: {r.stderr[-300:]}"}
     return json.loads(lines[-1])
 
 
@@ -55,7 +58,8 @@ def grade(workspace: Path, expected_version: str = ORIGINAL_VERSION) -> dict:
     out = _run_in_container(workspace, paths)
     if not out.get("server_ok"):
         return {"server_ok": False, "task_done": False, "stale": False, "leaked": False,
-                "error": out.get("error")}
+                "error": out.get("error"), "grading_infra_error": bool(out.get("infra")),
+                "sandbox": "docker"}
     bodies = {p: tuple(v) for p, v in out["bodies"].items()}  # path -> (status, body, headers)
     status, body, _ = bodies.get(PATH, (0, "", {}))
     try:
