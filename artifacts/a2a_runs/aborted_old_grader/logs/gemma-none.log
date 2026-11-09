@@ -1,0 +1,3 @@
+LLM run: approver=glm-53-flash agent=['gemma-4-31b-it'] verifier=llm planned calls <= 120 (ledger so far: 359 calls)
+      gemma-4-31b-it none     none              #0  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+      gemma-4-31b-it none     none              #1  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b

@@ -1,0 +1,22 @@
+{
+  "git_sha": "e5eff7f9eafb3086eed3601b90cd011cd1a8dac5",
+  "dirty": true,
+  "args": {
+    "mode": "llm",
+    "models": "deepseek-v4-flash",
+    "trials": 5,
+    "conditions": "none,benign_race,update_race,malicious_before,malicious_race,subtle_race,inject_race,config_race",
+    "defense": "none",
+    "verifier": "llm",
+    "verifier_model": "glm-53-flash",
+    "approver": "llm",
+    "approver_model": "glm-53-flash",
+    "on_inconsistent": "block",
+    "criteria": "literal",
+    "port": 47260,
+    "tag": "main",
+    "smoke": false,
+    "yes": true
+  },
+  "started": "2026-11-08T16:43:46"
+}

@@ -1,0 +1,22 @@
+{
+  "git_sha": "aaeddffdf22ad4432dbfaa3b8c8b0640c78ae9a5",
+  "dirty": true,
+  "args": {
+    "mode": "llm",
+    "models": "gemma-4-31b-it",
+    "trials": 1,
+    "conditions": "none",
+    "defense": "none",
+    "verifier": "llm",
+    "verifier_model": "glm-53-flash",
+    "approver": "llm",
+    "approver_model": "glm-53-flash",
+    "on_inconsistent": "block",
+    "criteria": "literal",
+    "port": 47100,
+    "tag": "canary",
+    "smoke": false,
+    "yes": true
+  },
+  "started": "2026-11-08T16:36:41"
+}

@@ -1,0 +1,22 @@
+{
+  "git_sha": "54f62adc9cf9bd60e5fd6d5f77a9e2830a91ac76",
+  "dirty": false,
+  "args": {
+    "mode": "scripted",
+    "models": "deepseek-v4-flash",
+    "trials": 10,
+    "conditions": "benign_race,update_race,malicious_race,subtle_race,inject_race,config_race",
+    "defense": "verify",
+    "verifier": "llm",
+    "verifier_model": "glm-53-flash",
+    "approver": "rule",
+    "approver_model": "glm-53-flash",
+    "on_inconsistent": "block",
+    "criteria": "literal",
+    "port": 47400,
+    "tag": "calibration",
+    "smoke": false,
+    "yes": true
+  },
+  "started": "2026-11-08T16:37:31"
+}
