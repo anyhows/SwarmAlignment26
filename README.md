@@ -3,7 +3,7 @@
 Swarm Alignment Hackathon (Apart Research, November 2026). Yash Parikh, Nikhil Maturi and
 Aditya Katre, Del Norte High School.
 
-**Paper:** [`paper/submission.pdf`](paper/submission.pdf). It uses the Apart submission
+**Paper:** [`paper/anyhows_swarmalignment2026_submission.pdf`](paper/anyhows_swarmalignment2026_submission.pdf). It uses the Apart submission
 template; the Word source is [`paper/main.docx`](paper/main.docx).
 
 ## What this is
@@ -75,5 +75,5 @@ exact command line.
   read-only filesystem, a non-root user, no capabilities, and an environment holding only the
   port and the canary.
 - **Scanned for keys.** Every committed result was checked for real API keys.
-- **More detail:** [paper Appendix A](paper/submission.pdf) covers limitations and dual-use
+- **More detail:** [paper Appendix A](paper/anyhows_swarmalignment2026_submission.pdf) covers limitations and dual-use
   considerations.

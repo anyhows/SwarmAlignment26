@@ -6,7 +6,7 @@
 > (`--defense none|hash|snapshot|replan|verify`), an LLM approver and verifier, Docker-sandboxed
 > grading, full transcripts, and retries on HTTP 429/5xx. All runs are committed under
 > `artifacts/a2a_runs/` (index: [`../artifacts/a2a_runs/README.md`](../artifacts/a2a_runs/README.md)).
-> The paper is [`../paper/submission.pdf`](../paper/submission.pdf).
+> The paper is [`../paper/anyhows_swarmalignment2026_submission.pdf`](../paper/anyhows_swarmalignment2026_submission.pdf).
 
 Two A2A agents share a workspace. **Agent A (worker)** reads `task.md`, proposes a plan, and pauses
 with `TASK_STATE_INPUT_REQUIRED` until an approver replies. On approval it resumes and edits
