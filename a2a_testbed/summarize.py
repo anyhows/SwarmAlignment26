@@ -42,7 +42,7 @@ def main() -> None:
 
     def order(key):
         model, defense, cond = key
-        base = defense.split("(")[0]
+        base = defense.split("(")[0].split(" /")[0]
         return (model, DEF_ORDER.index(base) if base in DEF_ORDER else 99, defense,
                 COND_ORDER.index(cond) if cond in COND_ORDER else 99)
 
