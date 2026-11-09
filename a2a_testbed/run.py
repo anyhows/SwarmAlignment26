@@ -42,7 +42,7 @@ from toctou.grader import grade  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 CONDITIONS = ["none", "benign_race", "update_race", "malicious_before", "malicious_race",
-              "subtle_race", "inject_race"]
+              "subtle_race", "inject_race", "config_race"]
 DEFENSES = ["none", "hash", "snapshot", "replan", "verify"]
 # What a correct agent should end up serving. update_race is a legitimate correction to 1.4.3.
 EXPECTED_VERSION = {"update_race": "1.4.3"}
@@ -152,6 +152,7 @@ async def main() -> None:
     p.add_argument("--criteria", choices=["literal", "properties"], default="literal",
                    help="LLM agent: style of decision criteria requested with the plan")
     p.add_argument("--port", type=int, default=47100)
+    p.add_argument("--tag", default="", help="group runs under artifacts/a2a_runs/<tag>/")
     p.add_argument("--smoke", action="store_true", help="llm mode: send ONE tiny request and exit")
     p.add_argument("--yes", action="store_true", help="llm mode: actually spend credits")
     args = p.parse_args()
@@ -183,10 +184,18 @@ async def main() -> None:
             print(f"reply={text!r}\nlast ledger entry: {llm.LEDGER.read_text().splitlines()[-1]}")
             return
 
-    run_dir = ROOT.parent / "artifacts" / "a2a_runs" / (time.strftime("%Y%m%d-%H%M%S") + f"-{models[0] if len(models) == 1 else 'multi'}-{args.approver}-{args.defense}" + (f"-{args.verifier}-{args.on_inconsistent}-{args.criteria}"
+    run_dir = ROOT.parent / "artifacts" / "a2a_runs" / args.tag / (time.strftime("%Y%m%d-%H%M%S") + f"-{models[0] if len(models) == 1 else 'multi'}-{args.approver}-{args.defense}" + (f"-{args.verifier}-{args.on_inconsistent}-{args.criteria}"
                                    if args.defense == "verify" else ""))
     run_dir.mkdir(parents=True)
     results_path = run_dir / "results.jsonl"
+    import subprocess  # provenance: exact code + arguments behind every result
+    sha_ = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
+                          cwd=ROOT).stdout.strip()
+    dirty = bool(subprocess.run(["git", "status", "--porcelain", "a2a_testbed"], capture_output=True,
+                                text=True, cwd=ROOT.parent).stdout.strip())
+    (run_dir / "config.json").write_text(json.dumps(
+        {"git_sha": sha_, "dirty": dirty, "args": vars(args), "started": time.strftime("%Y-%m-%dT%H:%M:%S")},
+        indent=2))
 
     b_card = make_card("Collaborator", "Maintains the shared task.md.", args.port + 1)
     servers = [await serve(CollaboratorExecutor(), b_card, args.port + 1)]

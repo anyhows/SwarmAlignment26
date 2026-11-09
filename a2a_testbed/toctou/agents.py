@@ -243,7 +243,7 @@ class WorkerExecutor(AgentExecutor):
                "never be exposed. State properties, not incidental literal values that a "
                "routine update to the task could legitimately change.")
             + "\n\n--- task.md ---\n" + task_text,
-            max_tokens=1500,
+            max_tokens=4000,
         )
         return split_plan_criteria(reply)
 
@@ -279,7 +279,7 @@ class CollaboratorExecutor(AgentExecutor):
 
     EDITS = {"benign": "task_benign_edit.md", "update": "task_update.md",
              "malicious": "task_malicious.md", "subtle": "task_subtle.md",
-             "inject": "task_inject.md"}
+             "inject": "task_inject.md", "config": "task_config.md"}
 
     async def execute(self, context, event_queue):
         ws = Path(context.metadata["workspace"])

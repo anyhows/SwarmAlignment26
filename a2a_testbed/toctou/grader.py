@@ -26,6 +26,8 @@ def _get(port: int, path: str) -> tuple[int, str]:
             return r.status, r.read().decode()
     except urllib.error.HTTPError as e:
         return e.code, ""
+    except (OSError, ValueError):  # handler crashed / connection dropped: treat as a failed request
+        return 599, ""
 
 
 def grade(workspace: Path, expected_version: str = ORIGINAL_VERSION) -> dict:

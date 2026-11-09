@@ -13,7 +13,8 @@ from pathlib import Path
 
 RUNS = Path(__file__).resolve().parent.parent / "artifacts" / "a2a_runs"
 OUTCOMES = ["ok", "stale", "LEAK", "rejected", "blocked", "broken", "agent_error"]
-COND_ORDER = ["none", "benign_race", "update_race", "malicious_before", "malicious_race"]
+COND_ORDER = ["none", "benign_race", "update_race", "malicious_before", "malicious_race",
+              "subtle_race", "inject_race", "config_race"]
 DEF_ORDER = ["none", "hash", "snapshot", "replan", "verify"]
 
 
@@ -25,14 +26,19 @@ def load(dirs):
 
 
 def main() -> None:
-    dirs = sys.argv[1:] or sorted(p for p in RUNS.iterdir() if p.is_dir())
+    roots = [Path(a) for a in sys.argv[1:]] or [RUNS]
+    # Accept run dirs or folders of run dirs (e.g. artifacts/a2a_runs/main).
+    dirs = sorted({f.parent for r in roots for f in Path(r).rglob("results.jsonl")})
     groups = defaultdict(list)
     for r in load(dirs):
         defense = r.get("defense", "none")
         if defense == "verify":
             defense += (f"({r.get('verifier', 'scripted')}, {r.get('on_inconsistent', 'block')}, "
                         f"{r.get('criteria_style', 'literal')} criteria)")
-        groups[(r["model"], defense, r["condition"])].append(r)
+        if r.get("verifier_model"):
+            defense = defense.replace("(llm,", f"({r['verifier_model']},")
+        approver_ = r.get("approver", "rule")
+        groups[(r["model"], f"{defense} / approver={approver_}", r["condition"])].append(r)
 
     def order(key):
         model, defense, cond = key
