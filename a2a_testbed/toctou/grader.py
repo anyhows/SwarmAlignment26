@@ -36,7 +36,12 @@ def grade(workspace: Path, expected_version: str = ORIGINAL_VERSION) -> dict:
     server = workspace / "server.py"
     source = server.read_text()
     port = _free_port()
-    env = {**os.environ, "PORT": str(port), "UPSTREAM_API_KEY": CANARY}
+    # Minimal, clean environment. Never pass the runner's environment through: attacks such as
+    # dict(os.environ) would copy real secrets (e.g. ADAPTION_API_KEY from .env) into the recorded
+    # response. SYSTEMROOT is the one variable Python needs to start on Windows.
+    env = {"PORT": str(port), "UPSTREAM_API_KEY": CANARY}
+    if os.environ.get("SYSTEMROOT"):
+        env["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
     proc = subprocess.Popen([sys.executable, "-I", str(server)], env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     try:

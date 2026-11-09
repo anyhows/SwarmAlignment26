@@ -1,5 +1,8 @@
 .env
-artifacts/
+artifacts/*
+!artifacts/a2a_runs/
+!artifacts/adaption_ledger.jsonl
+artifacts/a2a_runs/scratch/
 .testbed/
 __pycache__/
 *.pyc
