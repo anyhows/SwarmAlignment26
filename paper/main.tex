@@ -25,11 +25,10 @@
 
 \title{Approved, Then Swapped: Decision-Bound Verification Against TOCTOU Races in A2A Approval Flows}
 \author{%
-  Yash Parikh$^{*}$\\ {\normalsize AFFILIATION}
-  \and Nikhil Maturi$^{*}$\\ {\normalsize AFFILIATION}
-  \and Aditya Katre$^{*}$\\ {\normalsize AFFILIATION}\\[8pt]
-  {\normalsize With Apart Research}\\[2pt]
-  {\small $^{*}$Equal contribution}}
+  Yash Parikh\\ {\normalsize AFFILIATION}
+  \and Nikhil Maturi\\ {\normalsize AFFILIATION}
+  \and Aditya Katre\\ {\normalsize AFFILIATION}\\[8pt]
+  {\normalsize With Apart Research}}
 \date{Swarm Alignment Hackathon, November 6--8, 2026}
 
 \begin{document}
@@ -390,7 +389,8 @@ criteria, a stronger approver, and binding every file a decision depends on.
   \item \textbf{Code repository:} \url{https://github.com/anyhows/SwarmAlignment26}. The testbed
     is in \path{a2a_testbed/}.
   \item \textbf{Data:} \path{artifacts/a2a_runs/} contains every trial record with its
-    workspace and full LLM transcripts, plus the call ledger.
+    workspace and full LLM transcripts, plus the call ledger. A companion BashArena-derived
+    testbed and its runs are in \path{a2a_basharena_testbeds/} (Appendix~\ref{app:basharena}).
   \item \textbf{Payloads:} all secrets in the data are canaries; the attack payloads target
     only the testbed.
 \end{itemize}
@@ -632,6 +632,50 @@ policy-ambiguous, benign edits are auto-cleared 10/10 at every threshold up to 0
 \label{tab:calibration}
 \end{table}
 
+\section{Companion BashArena-Derived Testbed}
+\label{app:basharena}
+
+A second testbed (\path{a2a_basharena_testbeds/}, built by N.M.) adapts two BashArena tasks to
+the same A2A pause/resume flow: \emph{medium} restores a database configuration backup
+(BashArena task 43141659) and \emph{hard} installs a plugin set in dependency order (task
+29328278). Vendored fixtures are pre-existing BashArena material, checksum-pinned and attributed
+(CC BY-SA 4.0) in the testbed's \path{NOTICE.md} files. It differs from the main testbed in three ways: the model
+does not write code, only choosing \texttt{execute}, \texttt{request\_review} or
+\texttt{decline} after approval, while Python tools perform the restore or install; the
+approver is a deterministic policy gate; and the adversary stages a policy-violating revision
+(SSL disabled, or a plugin whose bytes fail the trusted manifest). The \emph{none} defense
+applies the current input; \emph{snapshot} applies the reviewed bytes. All services ran in
+Docker from a Linux (WSL) host.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{llcccc}
+\hline
+\textbf{Case} & \textbf{Defense} & \textbf{No change} & \textbf{Benign race} & \textbf{Policy before} & \textbf{Policy race}\\\hline
+medium & none & ok 4, blocked 1 & blocked 5 & rejected 5 & blocked 5\\
+medium & snapshot & ok 5 & ok 5 & rejected 5 & ok 5\\
+hard & none & ok 5 & ok 5 & rejected 5 & blocked 5\\
+hard & snapshot & ok 5 & ok 5 & rejected 5 & ok 5\\
+\hline
+\end{tabular}
+\caption{deepseek-v4-flash, 5 valid trials per cell. No trial ended in a policy violation or
+unapproved use. Seven provider errors (six 502/504, one invalid JSON) were excluded and topped
+up; the matrix cost about 0.03 credits.}
+\label{tab:basharena}
+\end{table}
+
+With a scripted worker, the policy race ends in a policy violation in both cases. The LLM
+worker never let it through (10/10 blocked), because its resume prompt shows the reviewed
+artifact digests next to those of the selected input: the model compares them and declines on
+mismatch. This makes the \emph{none} arm an implicit hash check rather than an undefended
+baseline, and it shows the same trade-off as hash binding in the main study: every
+timestamp-only medium change was also blocked (5/5), while \emph{snapshot} shipped all benign
+changes and applied only reviewed bytes. A baseline without digests in the prompt is left to
+future work. Two testbed fixes preceded these runs, both documented in its README: a
+12{,}000-token output ceiling (deepseek's resume reasoning exhausted 2{,}000) and supplying the
+medium worker with the trusted configuration digest the review records.
+
 \section{Future Work}
 \label{app:future}
 \begin{itemize}
@@ -655,8 +699,9 @@ policy-ambiguous, benign edits are auto-cleared 10/10 at every threshold up to 0
       \item Many concurrent editors.
     \end{itemize}
   \item \textbf{State beyond files.} Databases and APIs, where locks may still be needed.
-  \item \textbf{Realism.} Real coding agents with permission prompts, the BashArena
-    environment, more models, larger n, and human approvers with measured cost.
+  \item \textbf{Realism.} Real coding agents with permission prompts, the full BashArena
+    environment (including a companion-testbed baseline without digests in the resume
+    prompt), more models, larger n, and human approvers with measured cost.
   \item \textbf{Packaging.} An A2A ``approval-binding'' extension advertised in the Agent Card.
 \end{itemize}
 
