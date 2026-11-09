@@ -25,6 +25,11 @@ BASE = os.environ.get("ADAPTION_API_BASE", "https://api.prod.adaptionlabs.ai")
 LEDGER = Path(__file__).resolve().parents[2] / "artifacts" / "adaption_ledger.jsonl"
 _calls_this_process = 0
 RATE_LIMIT_RETRIES = 6
+# Full prompt/response transcripts. The runner sets TRANSCRIPT to <run_dir>/transcripts.jsonl and
+# CURRENT_TRIAL before each trial. Trials run sequentially in one process, and the in-process
+# agents call complete() during that trial, so each call is tagged with its trial.
+TRANSCRIPT: Path | None = None
+CURRENT_TRIAL: dict = {}
 CHEAP_MODELS = "deepseek-v4-flash,qwen3.8-27b,gemma-4-31b-it,gemma-4-26b-a4b-it,glm-53-flash"
 
 
@@ -65,6 +70,13 @@ async def complete(model: str, prompt: str, max_tokens: int) -> str:
         # instructed (60 s), with jitter so parallel runner processes don't retry in lockstep.
         if attempt < RATE_LIMIT_RETRIES:
             await asyncio.sleep(60 + random.uniform(0, 30))
+    if TRANSCRIPT is not None:
+        with TRANSCRIPT.open("a") as f:
+            f.write(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), **CURRENT_TRIAL,
+                                "model": model, "max_output_tokens": max_tokens, "prompt": prompt,
+                                "http": r.status_code, "status": body.get("status"),
+                                "output_text": body.get("output_text"), "usage": body.get("usage"),
+                                "error": body.get("error")}) + "\n")
     if r.status_code != 200 or body.get("status") != "completed":
         raise RuntimeError(f"Adaption call failed: http={r.status_code} status={body.get('status')} "
                            f"incomplete={body.get('incomplete_details')} error={body.get('error')}")

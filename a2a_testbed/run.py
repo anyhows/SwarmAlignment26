@@ -192,6 +192,7 @@ async def main() -> None:
                                    if args.defense == "verify" else ""))
     run_dir.mkdir(parents=True)
     results_path = run_dir / "results.jsonl"
+    llm.TRANSCRIPT = run_dir / "transcripts.jsonl"  # full prompts + replies, tagged by trial
     import subprocess  # provenance: exact code + arguments behind every result
     sha_ = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
                           cwd=ROOT).stdout.strip()
@@ -222,6 +223,8 @@ async def main() -> None:
             for i in range(args.trials):
                 ws = run_dir / model / cond / str(i)
                 ws.mkdir(parents=True)
+                llm.CURRENT_TRIAL.clear()
+                llm.CURRENT_TRIAL.update(agent=model, condition=cond, trial=i)
                 rec = {"model": model, "defense": args.defense, "verifier": args.verifier,
                        "on_inconsistent": args.on_inconsistent, "criteria_style": args.criteria,
                        "approver": args.approver if args.approver == "rule" else args.approver_model,
