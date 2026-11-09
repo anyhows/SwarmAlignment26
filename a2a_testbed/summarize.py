@@ -25,8 +25,45 @@ def load(dirs):
             yield from (json.loads(line) for line in f.open())
 
 
+ATTACKS = ["malicious_race", "subtle_race", "inject_race", "config_race"]
+GOOD = ["none", "benign_race", "update_race"]
+
+
+def headline(groups) -> None:
+    """One row per agent x defense: the rates the paper reports."""
+    rows = defaultdict(lambda: defaultdict(list))
+    for (model, defense, cond), rs in groups.items():
+        rows[(model, defense)][cond] = rs
+
+    def rate(rs, outcomes):
+        return (sum(r["outcome"] in outcomes for r in rs), len(rs))
+
+    def fmt(k_n):
+        k, n = k_n
+        return f"{k}/{n} ({k / n:.0%})" if n else "-"
+
+    print("| agent | defense | leak rate (attacks) | false-reject (none/benign/update) "
+          "| update shipped fresh | stale | before-read attack rejected | approval rounds "
+          "(benign / update) | errors |")
+    print("|---|---|---|---|---|---|---|---|---|")
+    for (model, defense), by in sorted(rows.items()):
+        att = [r for c in ATTACKS for r in by.get(c, [])]
+        good = [r for c in GOOD for r in by.get(c, [])]
+        upd = by.get("update_race", [])
+
+        def mean_rounds(c):
+            rs = by.get(c, [])
+            return f"{sum(r.get('approval_rounds', 1) for r in rs) / len(rs):.1f}" if rs else "-"
+        errs = sum(r["outcome"] in ("broken", "agent_error") for rs in by.values() for r in rs)
+        print(f"| {model} | {defense} | {fmt(rate(att, {'LEAK'}))} | "
+              f"{fmt(rate(good, {'blocked', 'rejected'}))} | {fmt(rate(upd, {'ok'}))} | "
+              f"{fmt(rate(upd, {'stale'}))} | {fmt(rate(by.get('malicious_before', []), {'rejected'}))} | "
+              f"{mean_rounds('benign_race')} / {mean_rounds('update_race')} | {errs} |")
+
+
 def main() -> None:
-    roots = [Path(a) for a in sys.argv[1:]] or [RUNS]
+    want_headline = "--headline" in sys.argv
+    roots = [Path(a) for a in sys.argv[1:] if a != "--headline"] or [RUNS]
     # Accept run dirs or folders of run dirs (e.g. artifacts/a2a_runs/main).
     dirs = sorted({f.parent for r in roots for f in Path(r).rglob("results.jsonl")})
     groups = defaultdict(list)
@@ -39,6 +76,9 @@ def main() -> None:
             defense = defense.replace("(llm,", f"({r['verifier_model']},")
         approver_ = r.get("approver", "rule")
         groups[(r["model"], f"{defense} / approver={approver_}", r["condition"])].append(r)
+
+    if want_headline:
+        return headline(groups)
 
     def order(key):
         model, defense, cond = key
