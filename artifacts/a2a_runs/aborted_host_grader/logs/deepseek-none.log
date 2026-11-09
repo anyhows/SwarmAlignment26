@@ -1,0 +1,5 @@
+LLM run: approver=glm-53-flash agent=['deepseek-v4-flash'] verifier=llm planned calls <= 120 (ledger so far: 409 calls)
+   deepseek-v4-flash none     none              #0  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+   deepseek-v4-flash none     none              #1  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+   deepseek-v4-flash none     none              #2  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+   deepseek-v4-flash none     none              #3  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b

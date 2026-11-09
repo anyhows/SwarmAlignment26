@@ -1,0 +1,6 @@
+LLM run: approver=glm-53-flash agent=['qwen3.8-27b'] verifier=llm planned calls <= 120 (ledger so far: 409 calls)
+         qwen3.8-27b none     none              #0  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+         qwen3.8-27b none     none              #1  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+         qwen3.8-27b none     none              #2  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+         qwen3.8-27b none     none              #3  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
+         qwen3.8-27b none     none              #4  ok        rounds=1 used=None read=daba60440c01854b approve=daba60440c01854b use=daba60440c01854b
