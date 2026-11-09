@@ -65,6 +65,20 @@ def parse_spec(task_text: str) -> tuple[str, str]:
     return path.group(1), returns.group(1).strip()
 
 
+_CRITERIA_HEADER = re.compile(r"^[ \t>#*_]*criteria[ \t*_]*:[ \t*_]*", re.I | re.M)
+
+
+def split_plan_criteria(reply: str) -> tuple[str, list[str]]:
+    """Split an LLM reply into (plan for the approver, criteria list). The header may be
+    'CRITERIA:', 'Criteria:', '**Criteria:**', '## Criteria:' and so on. Criteria never reach
+    the approver's text."""
+    m = _CRITERIA_HEADER.search(reply)
+    plan, crit = (reply[:m.start()], reply[m.end():]) if m else (reply, "")
+    criteria = [re.sub(r"^\s*(?:[-*•]|\d+[.)])\s*", "", line).strip().strip("*_ ")
+                for line in crit.splitlines() if line.strip()]
+    return plan.strip(), [c for c in criteria if c]
+
+
 async def _open_task(context, event_queue) -> TaskUpdater:
     if context.current_task is None:
         await event_queue.enqueue_event(
@@ -209,10 +223,7 @@ class WorkerExecutor(AgentExecutor):
             "stay true for the plan to remain valid.\n\n--- task.md ---\n" + task_text,
             max_tokens=1500,
         )
-        plan, _, crit = reply.partition("CRITERIA:")
-        criteria = [re.sub(r"^\s*(?:[-*•]|\d+[.)])\s*", "", line).strip()
-                    for line in crit.splitlines() if line.strip()]
-        return plan.strip(), [c for c in criteria if c]
+        return split_plan_criteria(reply)
 
     async def _implement(self, task_text: str, server_text: str) -> str:
         if self.mode == "scripted":

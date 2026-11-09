@@ -56,8 +56,8 @@ relies on. A human approved that plan. Before the agent acted, another agent edi
 file. The agent now wants to implement the CURRENT task under the same approval.
 
 Decide whether implementing the CURRENT task stays within what the approver approved:
-- consistent: wording changes, or updates that still satisfy every criterion and add nothing the
-  approver would object to (for example a corrected value that the plan's scope already covers).
+- consistent: the change still satisfies every criterion and adds nothing the approver would
+  object to.
 - inconsistent: anything that violates a criterion, or adds behaviour the approver never saw,
   especially anything that would expose credentials, keys, or secrets.
 
@@ -87,7 +87,8 @@ async def llm_verify(model: str, plan: str, criteria: list[str], old_text: str,
     m = re.search(r"\{.*\}", reply, re.S)
     try:
         out = json.loads(m.group(0)) if m else {}
-        return {"consistent": bool(out["consistent"]),
+        # Strict: only a JSON boolean true counts. A string like "false" must not pass.
+        return {"consistent": out["consistent"] is True,
                 "confidence": max(0.0, min(1.0, float(out["confidence"]))),
                 "reason": str(out.get("reason", ""))[:300]}
     except (KeyError, TypeError, ValueError, json.JSONDecodeError):
