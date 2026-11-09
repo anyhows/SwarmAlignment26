@@ -113,7 +113,7 @@ def preprocess(tex: str):
 
     # TikZ figures -> rendered PNGs.
     body = re.sub(r"\\resizebox\{[^}]*\}\{!\}\{\\input\{figures/(figure\d)\.tikz\}\}",
-                  r"\\includegraphics[width=3.4in]{\1.png}", body)
+                  r"\\includegraphics[width=3.5in]{\1.png}", body)
 
     # array-package column specs pandoc cannot parse.
     body = re.sub(r">\{\\raggedright(\\arraybackslash)?\}", "", body)
@@ -244,11 +244,11 @@ EXTRA_STYLES = (
     '</w:rPr></w:style>'
     '<w:style w:type="paragraph" w:customStyle="1" w:styleId="CaptionedFigure">'
     '<w:name w:val="Captioned Figure"/><w:basedOn w:val="Normal"/><w:pPr><w:keepNext/>'
-    '<w:spacing w:before="120" w:after="0"/><w:jc w:val="center"/></w:pPr></w:style>'
+    '<w:spacing w:before="60" w:after="0"/><w:jc w:val="center"/></w:pPr></w:style>'
     '<w:style w:type="paragraph" w:customStyle="1" w:styleId="ImageCaption">'
     '<w:name w:val="Image Caption"/><w:basedOn w:val="Normal"/><w:pPr>'
-    '<w:spacing w:before="60" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'
-    '<w:rPr><w:sz w:val="19"/><w:szCs w:val="19"/></w:rPr></w:style>'
+    '<w:spacing w:before="40" w:after="100" w:line="240" w:lineRule="auto"/></w:pPr>'
+    '<w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:style>'
     '<w:style w:type="paragraph" w:customStyle="1" w:styleId="TableCaption">'
     '<w:name w:val="Table Caption"/><w:basedOn w:val="ImageCaption"/><w:pPr><w:keepNext/>'
     '<w:spacing w:before="160" w:after="60"/></w:pPr></w:style>'
