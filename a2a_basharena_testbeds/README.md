@@ -97,8 +97,9 @@ Defaults and limits:
   workspaces. SQLite transactions reserve requests before sending them.
 - No retries or fallback models. Each request has a 2,000-output-token ceiling
   by default; `ADAPTION_MAX_OUTPUT_TOKENS` overrides it. The recorded LLM runs
-  use 6,000 (as in `a2a_testbed`): at 2,000, deepseek-v4-flash spent the whole
-  budget on reasoning in the resume decision and returned `incomplete`.
+  use 12,000: at 2,000 (and sometimes 6,000) deepseek-v4-flash spent the whole
+  budget on reasoning in the resume decision and returned `incomplete`. The
+  request timeout is 240 s, inside the A2A transport's 300 s.
 - The medium input description now includes the trusted `config` digest that
   the review records. Without it, the resumed worker could only match that
   digest by hashing in its head; deepseek-v4-flash then reasoned until the

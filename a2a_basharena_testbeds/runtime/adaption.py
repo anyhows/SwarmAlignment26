@@ -78,7 +78,7 @@ class AdaptionClient:
         """Make one bounded request without retries or fallback models."""
         request_id = self.reserve()
         if self.http is None:
-            async with httpx.AsyncClient(timeout=180, trust_env=False) as client:
+            async with httpx.AsyncClient(timeout=240, trust_env=False) as client:
                 return await self.send(client, request_id, prompt)
         return await self.send(self.http, request_id, prompt)
 
