@@ -1,3 +1,11 @@
+> **This repo has two parts:**
+> - **[`a2a_testbed/`](a2a_testbed/README.md)**: the A2A approval-race (TOCTOU) experiment:
+>   agents, attacks, defenses, results, and [future work](a2a_testbed/FUTURE_WORK.md). This is
+>   the main project.
+> - **[`paper/draft.md`](paper/draft.md)**: the hackathon paper draft.
+> - **The BashArena testbed below** (`testbed/`, `vendor/`, `Makefile`) is the planned stretch
+>   environment and isn't used by the current experiments.
+
 # BashArena nginx testbed
 
 A resettable Ubuntu **22.04** administration environment for BashArena task
