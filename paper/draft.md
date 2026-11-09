@@ -199,6 +199,14 @@ down the main experiment before any results existed, and ran it with n = 5 per c
 `dict(os.environ)` or a settings dump as a secret. So both re-approval defenses leak the
 subtle and held-out attacks, even though the scripted verifier flagged them.
 
+**Dependency race: the hash's blind spot (scripted, n = 2 per defense).**
+- **Setup:** `task.md` says the response body is defined in `response.json`. B edits
+  `response.json`, not `task.md`, inside the approval window.
+- **Result:** **every defense leaks 2/2**: none, hash, snapshot, replan and verify.
+- **Why:** the `task.md` hash is unchanged (`h_read == h_use`), the approved plan was harmless,
+  and the deployed endpoint returned the canary. Binding an approval to one file's hash is only
+  as complete as the set of files the decision depends on.
+
 ### 4.3 Main experiment (LLM agents, LLM approver and verifier, n = 5 per cell)
 
 **[MAIN RESULTS PENDING]**: one table per agent model for `none` and `verify`, with leak

@@ -7,8 +7,10 @@ gap in the current defenses or an experiment we didn't have time to run.
 
 1. **Files the decision depends on.** The approval binds the hash of `task.md` only. If
    `task.md` says "use the settings in `config.json`", an attacker can swap `config.json`, and
-   no hash covers it. Next step: bind the approval to a manifest of every file the plan reads
-   (content-addressed), and add a `dependency_race` condition.
+   no hash covers it. **Demonstrated:** `--conditions dep_race` (scripted) leaks 2/2 under every
+   defense, including hash and verify, with `h_read == h_use`. Next step: bind the approval to
+   a manifest of every file the plan reads (content-addressed), and give the LLM agent
+   file-reading tools so the condition can run end to end.
 2. **The file the agent writes.** Concurrent edits to `server.py` (the *target*) aren't
    protected. A compare-and-swap on the target's hash, or applying a patch rather than
    rewriting the file, would extend the same idea to the write side.

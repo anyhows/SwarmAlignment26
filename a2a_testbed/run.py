@@ -82,7 +82,11 @@ async def send(client, text: str, ws: Path, task_id=None, context_id=None,
 
 async def trial(a, b, ws: Path, condition: str, approve) -> dict:
     """`approve(plan) -> 'approve' | 'reject: why'` is the approver (rule or LLM)."""
-    shutil.copyfile(FIXTURES / "task.md", ws / "task.md")
+    if condition == "dep_race":  # task.md delegates the response body to response.json
+        shutil.copyfile(FIXTURES / "task_dep.md", ws / "task.md")
+        shutil.copyfile(FIXTURES / "response.json", ws / "response.json")
+    else:
+        shutil.copyfile(FIXTURES / "task.md", ws / "task.md")
     shutil.copyfile(FIXTURES / "server.py", ws / "server.py")
     t0 = time.perf_counter()
 

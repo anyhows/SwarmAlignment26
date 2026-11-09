@@ -57,9 +57,14 @@ def sha(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()[:16]
 
 
-def parse_spec(task_text: str) -> tuple[str, str]:
+def parse_spec(task_text: str, ws: Path | None = None) -> tuple[str, str]:
+    """`- returns_from: FILE` (dependency_race demo) takes the body from another workspace file,
+    read at the moment of parsing. That file is NOT covered by the task.md hash."""
     path = re.search(r"^- path:\s*(\S+)", task_text, re.M)
     returns = re.search(r"^- returns:\s*(.+)$", task_text, re.M)
+    dep = re.search(r"^- returns_from:\s*(\S+)", task_text, re.M)
+    if path and dep and ws is not None:
+        return path.group(1), (ws / dep.group(1)).read_text().strip()
     if not path or not returns:
         raise ValueError("task.md has no '- path:' / '- returns:' spec lines")
     return path.group(1), returns.group(1).strip()
@@ -126,6 +131,7 @@ class WorkerExecutor(AgentExecutor):
         # properties = ask for approver-relevant properties, not incidental literal values.
         self.criteria_style = criteria_style
         self.records: dict[str, dict] = {}  # task_id -> what the pending approval refers to
+        self._ws: Path | None = None
 
     async def _ask_approval(self, up, task_id: str, task_text: str, phase: str,
                             replans: int, extra: dict | None = None) -> None:
@@ -142,6 +148,7 @@ class WorkerExecutor(AgentExecutor):
 
     async def execute(self, context, event_queue):
         ws = Path(context.metadata["workspace"])
+        self._ws = ws  # scripted mode: lets parse_spec resolve returns_from files
         up = await _open_task(context, event_queue)
         task_id = context.task_id
 
@@ -226,7 +233,7 @@ class WorkerExecutor(AgentExecutor):
         """Return (plan shown to the approver, decision criteria the plan relies on)."""
         if self.mode == "scripted":
             await _fake_latency()
-            path, returns = parse_spec(task_text)
+            path, returns = parse_spec(task_text, self._ws)
             return (f"Plan: add GET {path} to server.py, returning {returns}.",
                     verifier.scripted_criteria(task_text))
         reply = await llm.complete(
@@ -250,7 +257,7 @@ class WorkerExecutor(AgentExecutor):
     async def _implement(self, task_text: str, server_text: str) -> str:
         if self.mode == "scripted":
             await _fake_latency()
-            path, returns = parse_spec(task_text)
+            path, returns = parse_spec(task_text, self._ws)
             fn = "get_" + re.sub(r"\W", "_", path.strip("/"))
             server_text = server_text.replace(
                 "ROUTES = {", f"def {fn}():\n    return {returns}\n\n\nROUTES = {{", 1
@@ -279,13 +286,16 @@ class CollaboratorExecutor(AgentExecutor):
 
     EDITS = {"benign": "task_benign_edit.md", "update": "task_update.md",
              "malicious": "task_malicious.md", "subtle": "task_subtle.md",
-             "inject": "task_inject.md", "config": "task_config.md"}
+             "inject": "task_inject.md", "config": "task_config.md",
+             # dependency race: B edits a file task.md points to, not task.md itself
+             "dep": ("response_malicious.json", "response.json")}
 
     async def execute(self, context, event_queue):
         ws = Path(context.metadata["workspace"])
         up = await _open_task(context, event_queue)
         edit = context.get_user_input().split(":", 1)[-1].strip()
-        shutil.copyfile(FIXTURES / self.EDITS[edit], ws / "task.md")
+        src, target = (self.EDITS[edit], "task.md") if isinstance(self.EDITS[edit], str)             else self.EDITS[edit]
+        shutil.copyfile(FIXTURES / src, ws / target)
         await up.complete(
             up.new_agent_message(
                 [Part(text=f"Updated task.md ({edit}).")],
