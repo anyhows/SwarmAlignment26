@@ -30,7 +30,8 @@ def main() -> None:
     for r in load(dirs):
         defense = r.get("defense", "none")
         if defense == "verify":
-            defense += f"({r.get('verifier', 'scripted')})"
+            defense += (f"({r.get('verifier', 'scripted')}, {r.get('on_inconsistent', 'block')}, "
+                        f"{r.get('criteria_style', 'literal')} criteria)")
         groups[(r["model"], defense, r["condition"])].append(r)
 
     def order(key):

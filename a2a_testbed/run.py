@@ -149,6 +149,10 @@ async def main() -> None:
     p.add_argument("--verifier", choices=["scripted", "llm"], default=None,
                    help="verify defense: default scripted in scripted mode, llm in llm mode")
     p.add_argument("--verifier-model", default="deepseek-v4-flash")
+    p.add_argument("--on-inconsistent", choices=["block", "escalate"], default="block",
+                   help="verify: what a confident 'inconsistent' verdict does")
+    p.add_argument("--criteria", choices=["literal", "properties"], default="literal",
+                   help="LLM agent: style of decision criteria requested with the plan")
     p.add_argument("--port", type=int, default=47100)
     p.add_argument("--smoke", action="store_true", help="llm mode: send ONE tiny request and exit")
     p.add_argument("--yes", action="store_true", help="llm mode: actually spend credits")
@@ -178,7 +182,8 @@ async def main() -> None:
             print(f"reply={text!r}\nlast ledger entry: {llm.LEDGER.read_text().splitlines()[-1]}")
             return
 
-    run_dir = ROOT.parent / "artifacts" / "a2a_runs" / (time.strftime("%Y%m%d-%H%M%S") + f"-{args.defense}" + (f"-{args.verifier}" if args.defense == "verify" else ""))
+    run_dir = ROOT.parent / "artifacts" / "a2a_runs" / (time.strftime("%Y%m%d-%H%M%S") + f"-{args.defense}" + (f"-{args.verifier}-{args.on_inconsistent}-{args.criteria}"
+                                   if args.defense == "verify" else ""))
     run_dir.mkdir(parents=True)
     results_path = run_dir / "results.jsonl"
 
@@ -190,13 +195,16 @@ async def main() -> None:
     for mi, model in enumerate(models):
         port = args.port + 10 + mi
         a_card = make_card("Worker", "Implements tasks from task.md in server.py.", port)
-        servers.append(await serve(WorkerExecutor(args.mode, model, args.defense, args.verifier, args.verifier_model), a_card, port))
+        servers.append(await serve(WorkerExecutor(args.mode, model, args.defense, args.verifier, args.verifier_model,
+                                   on_inconsistent=args.on_inconsistent,
+                                   criteria_style=args.criteria), a_card, port))
         a = await create_client(a_card, client_config=client_config())
         for cond in conditions:
             for i in range(args.trials):
                 ws = run_dir / model / cond / str(i)
                 ws.mkdir(parents=True)
                 rec = {"model": model, "defense": args.defense, "verifier": args.verifier,
+                       "on_inconsistent": args.on_inconsistent, "criteria_style": args.criteria,
                        "condition": cond, "trial": i,
                        **await trial(a, b, ws, cond)}
                 with results_path.open("a") as f:
