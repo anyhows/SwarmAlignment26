@@ -2,6 +2,8 @@
 artifacts/*
 !artifacts/a2a_runs/
 !artifacts/adaption_ledger.jsonl
+!artifacts/a2a_basharena_testbeds/
+artifacts/a2a_basharena_testbeds/runs/winsmoke/
 artifacts/a2a_runs/scratch/
 .testbed/
 __pycache__/

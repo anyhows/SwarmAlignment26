@@ -96,7 +96,11 @@ class AdaptionClient:
                 json={
                     "model": self.model,
                     "input": prompt,
-                    "max_output_tokens": 2000,
+                    # deepseek-v4-flash reasoning alone can exhaust 2,000 tokens on the resume
+                    # decision (status "incomplete"); a2a_testbed uses 6,000.
+                    "max_output_tokens": int(
+                        os.environ.get("ADAPTION_MAX_OUTPUT_TOKENS", "2000")
+                    ),
                 },
             )
             response.raise_for_status()

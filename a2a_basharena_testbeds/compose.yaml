@@ -30,6 +30,7 @@ x-executor: &executor
     ADAPTION_LEDGER_DB: /budget/adaption-budget.sqlite3
     ADAPTION_MAX_CALLS: ${ADAPTION_MAX_CALLS:-20}
     ADAPTION_LEDGER_MAX_CALLS: ${ADAPTION_LEDGER_MAX_CALLS:-60}
+    ADAPTION_MAX_OUTPUT_TOKENS: ${ADAPTION_MAX_OUTPUT_TOKENS:-2000}
   depends_on:
     reviewer:
       condition: service_healthy

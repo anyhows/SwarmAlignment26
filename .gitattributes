@@ -1,3 +1,5 @@
 # Keep the BashArena testbed byte-identical on every OS: its vendored fixtures are
 # checksum-verified, and Windows CRLF conversion breaks those checksums.
 a2a_basharena_testbeds/** -text
+# Trial records store SHA-256 digests of these files; keep them byte-identical too.
+artifacts/a2a_basharena_testbeds/** -text

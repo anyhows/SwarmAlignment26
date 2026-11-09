@@ -95,7 +95,10 @@ Defaults and limits:
   batch is checked before it starts; worker processes also enforce their caps.
 - `ADAPTION_LEDGER_MAX_CALLS` defaults to 60 requests across this testbed's
   workspaces. SQLite transactions reserve requests before sending them.
-- No retries or fallback models. Each request has a 2,000-output-token ceiling.
+- No retries or fallback models. Each request has a 2,000-output-token ceiling
+  by default; `ADAPTION_MAX_OUTPUT_TOKENS` overrides it. The recorded LLM runs
+  use 6,000 (as in `a2a_testbed`): at 2,000, deepseek-v4-flash spent the whole
+  budget on reasoning in the resume decision and returned `incomplete`.
   Incomplete, empty, or invalid structured responses are errors, not successes.
 - Reserved/failed calls count toward limits. Status and provider usage are kept
   in `artifacts/a2a_basharena_testbeds/budget/adaption-budget.sqlite3`.
