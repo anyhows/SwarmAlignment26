@@ -23,7 +23,7 @@ PAPER = Path(__file__).resolve().parent
 BUILD = PAPER / "docx_build"
 OUT = PAPER / "main.docx"
 AUTHORS = ["Yash Parikh", "Nikhil Maturi", "Aditya Katre"]
-AFFILIATION = "[Affiliation]"
+AFFILIATION = "Del Norte High School"
 
 
 def wsl_path(p: Path) -> str:
