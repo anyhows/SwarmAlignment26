@@ -4,6 +4,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{listings}
+\usepackage{array}
 \usepackage[hidelinks]{hyperref}
 \input{figures/preamble.tex}
 
@@ -16,379 +17,458 @@
   showstringspaces=false
 }
 
-\title{Decision-Bound Verification for Concurrent A2A Agents: Characterizing TOCTOU Failures and Evaluating Semantic Revalidation}
-\author{Project Team}
-\date{Draft --- November 8, 2026}
+\title{Approved, Then Swapped: Decision-Bound Verification Against TOCTOU Races in A2A Approval Flows}
+\author{Nikhil, Adi, Yash}
+\date{Swarm Alignment Hackathon --- November 8, 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
+Multi-agent systems built on the Agent2Agent (A2A) protocol often place a human or model
+approver in the loop: an agent proposes a plan, pauses (\texttt{INPUT\_REQUIRED}), and acts
+once approved. A2A lets an agent request approval but leaves the scope and enforcement of
+that approval to the application. We show that a natural implementation of this pattern
+contains a \textbf{time-of-check-to-time-of-use (TOCTOU) race}: a collaborating agent with
+legitimate write access can rewrite the shared task after the plan is approved and before it
+is executed, so the approved agent implements something the approver never saw.
 
-The Agent2Agent (A2A) protocol enables autonomous agents to collaborate through
-asynchronous, multi-turn interactions. However, concurrent agents may modify shared task
-state between the time another agent reads information, makes a decision, and executes
-an action, introducing time-of-check-to-time-of-use (TOCTOU) vulnerabilities. Recent
-work, A2ABreak, identifies this weakness at the protocol level, but its manifestation in
-executable multi-agent workflows and the effectiveness of practical interventions remain
-insufficiently characterized.
-
-We investigate TOCTOU vulnerabilities in A2A systems through two planned contributions.
-First, we plan to develop a reproducible evaluation framework spanning minimal protocol-level races and
-realistic multi-agent workflows involving shared resources, delayed decisions, and
-concurrent updates. Second, we propose a semantic revalidation mechanism in which agents
-generate explicit decision preconditions, an independent LLM verifier checks their
-continued validity, and a trusted execution layer enforces the resulting decision using
-dependency-aware concurrency control and atomic commits.
-
-We plan experiments comparing our approach against unprotected execution,
-coarse-grained locking, task-wide versioning, and conventional dependency-based
-revalidation. We will evaluate both security and utility through unsafe-action rates,
-legitimate-work preservation, and computational overhead.
-
-Our objective is to characterize when stale decisions produce security failures and
-determine whether semantic verification can preserve decision integrity without
-unnecessarily restricting parallel agent execution.
-
+In an executable A2A testbed with three LLM agents (deepseek-v4-flash, qwen3.8-27b,
+gemma-4-31b-it), sandboxed grading and a pre-registered design, the race leaked a canary API
+key in \textbf{90\%, 55\% and 100\%} of attack trials, while the same edit made \emph{before}
+the agent read the task was caught by the approver every time (15/15). We evaluate five
+application-level defenses. All of them read the task once at use time and implement from
+exactly the bytes they checked. Hash binding closes the race but rejects every concurrent
+edit. Snapshots never leak but ship stale work. Our proposed \emph{verify-and-escalate}
+defense has the agent emit decision criteria with its plan. An independent LLM verifier
+checks any concurrent change against them and escalates anything it does not clear to
+re-approval. It allowed \textbf{0/60 leaks} across four attack types (including a
+verifier-targeted prompt injection and a held-out attack), wrongly blocked \textbf{0/45}
+legitimate tasks, and shipped every legitimate update correctly (15/15), at the cost of one
+extra approval round for substantive changes. We find that the verifier is only as precise as
+its criteria (model-written criteria over-specify incidental values), that escalation makes
+the approver the weakest link, and that binding approval to one file's hash leaves dependent
+files exposed: every defense leaks when the attacker edits a file the task merely references.
 \end{abstract}
 
 \section{Introduction}
 
-Autonomous agents are increasingly deployed as collaborative systems rather than
-isolated models. Instead of independently completing tasks, agents delegate subtasks,
-exchange information, access shared resources, and coordinate across organizational
-boundaries. Google's Agent2Agent (A2A) protocol standardizes such interactions,
-providing mechanisms for agent discovery, task delegation, asynchronous execution, and
-multi-turn communication \cite{a2a-spec}.
+Autonomous agents are increasingly deployed as collaborative systems rather than isolated
+models. Agents delegate subtasks, exchange information, access shared resources, and
+coordinate across organizational boundaries. Google's Agent2Agent (A2A) protocol standardizes
+such interactions, providing mechanisms for agent discovery, task delegation, asynchronous
+execution, and multi-turn communication \cite{a2a-spec}.
 
-However, the ability of agents to operate asynchronously introduces a fundamental
-security problem: \textbf{the state upon which an agent makes a decision may no longer
-be valid when that decision is acted upon}.
-
-Consider an agent that receives a request to approve a transaction. Before responding,
-it reads the transaction amount, recipient, and applicable authorization policy. While
-the agent is evaluating the request, another agent modifies the shared task or its
-underlying resources. If the first agent subsequently submits its approval without
-revalidating the relevant information, the approval may be applied to a transaction
-materially different from the one originally evaluated.
-
-Figure~\ref{fig:toctou-attack} illustrates how an honest response can become
-stale even when the task identifier and lifecycle status remain unchanged.
+However, the ability of agents to operate asynchronously introduces a fundamental security
+problem: \textbf{the state upon which an agent makes a decision may no longer be valid when
+that decision is acted upon}. Approval gates, where a person or model reviews what an agent
+intends to do before it does it, make this concrete. An approval is a statement about the
+\emph{content the approver saw}. If that content can change between the check and the use,
+the gate certifies something other than what runs.
+Figure~\ref{fig:toctou-attack} illustrates how an honest response can become stale even when
+the task identifier and lifecycle status remain unchanged.
 
 \begin{figure}[tbp]
   \centering
   \resizebox{\linewidth}{!}{\input{figures/figure1.tikz}}
-  \caption{A protocol-compliant concurrent update changes the conditions
-    of an ongoing A2A task after Agent A observes its state. Without
-    revision-bound validation, A's subsequent response may be processed
-    against a different task state from the one it evaluated. S1/S2 are
-    illustrative state labels, not fields supplied by A2A.}
+  \caption{A protocol-compliant concurrent update changes the conditions of an ongoing A2A
+    task after Agent A observes its state. Without revision-bound validation, A's subsequent
+    response may be processed against a different task state from the one it evaluated.
+    S1/S2 are illustrative state labels, not fields supplied by A2A.}
   \label{fig:toctou-attack}
 \end{figure}
 
-This is a time-of-check-to-time-of-use (TOCTOU) vulnerability. Although TOCTOU is well
-established in conventional computer systems, its manifestation in LLM-agent workflows
-introduces additional challenges. Agent decisions can involve extended reasoning,
-delayed tool execution, human intervention, and multiple independently evolving sources
-of information. Furthermore, the conditions underlying an agent's decision are
-frequently expressed in natural language, rather than predefined programmatic
-predicates.
+This is a time-of-check-to-time-of-use (TOCTOU) vulnerability. TOCTOU is well established in
+conventional systems \cite{bishop-toctou}, but LLM-agent workflows add new difficulties:
+decisions involve extended reasoning, delayed tool execution and human intervention, and the
+conditions underlying a decision are usually natural language rather than programmatic
+predicates. The race is also easy to fall into with A2A specifically: the Python SDK resumes
+an \texttt{INPUT\_REQUIRED} task by calling the agent's \texttt{execute()} again from scratch,
+so a stateless agent naturally re-reads its inputs from the shared workspace after approval.
+That re-read is the ``use''.
 
-Lotfi et al. \cite{a2abreak} identify \textbf{Concurrent Access TOCTOU} as one of eleven
-vulnerabilities in the A2A protocol. Their specification-level analysis demonstrates
-that the absence of a standardized task-state versioning mechanism permits stale-state
-decisions under concurrent access. However, the study primarily establishes the
-protocol-level vulnerability rather than experimentally characterizing its behavior
-across executable A2A workflows or evaluating alternative runtime defenses.
+Lotfi et al.\ \cite{a2abreak} identify \textbf{Concurrent Access TOCTOU} as one of eleven
+vulnerabilities in the A2A protocol, but establish it at the specification level rather than
+characterizing it in executable workflows or evaluating runtime defenses. This paper does
+both. A conservative fix (lock the task, or reject any decision whose inputs changed) prevents
+the race but discards legitimate concurrent work. This motivates a more selective question:
+\textbf{does the change invalidate the conditions that justified the original decision?}
 
-A straightforward intervention is to lock shared task state or invalidate decisions
-whenever the task changes. Although conservative concurrency control can prevent
-stale-state races, it may unnecessarily interfere with legitimate parallel execution.
-For instance, a change to an unrelated progress message should not necessarily
-invalidate an approval based on a transaction's price and recipient.
-
-This motivates a more selective approach: \textbf{rather than treating every state
-change as a security-relevant conflict, determine whether the change invalidates the
-conditions that justified the original decision}.
-
-We investigate this problem through a two-part study. First, we plan to construct
-reproducible A2A environments that expose TOCTOU failures under controlled concurrent interactions.
-Second, we propose a verifier-assisted mechanism that represents agent decisions through
-explicit acceptance criteria, independently validates those criteria against current
-task state, and binds successful verification to the eventual execution through atomic
-enforcement.
-
-Our central research question is:
-
-\emph{Can semantic verification of agent decisions prevent TOCTOU vulnerabilities in
-concurrent A2A workflows while preserving more legitimate parallel execution than
-conventional task-wide concurrency controls?}
+\paragraph{Contributions.}
+\begin{enumerate}
+  \item An executable, reproducible A2A testbed in which a scripted collaborator rewrites a
+    shared task file exactly inside an agent's approval window. Grading is deterministic
+    (a canary key) and runs model-written code only in a locked-down container.
+  \item Evidence that the race is real with off-the-shelf LLM agents (55--100\% leak rates),
+    together with a control showing that the same approver catches the same edit when there
+    is no race.
+  \item Five application-level defenses requiring no protocol change, and an evaluation of
+    their security--utility trade-off, including a decision-criteria verifier with escalation.
+  \item Failure modes relevant to anyone deploying approval gates: over-specified
+    model-written criteria, the approver as weakest link once a defense escalates, and
+    dependency races that bypass content binding entirely.
+\end{enumerate}
 
 \subsection{Motivation}
 
-Existing concurrency mechanisms provide strong foundations for detecting and preventing
-stale-state updates. However, long-running agent workflows make the distinction between
-a \textbf{state change} and a \textbf{decision-invalidating change} particularly
-important.
-
-For example, consider an agent approving a purchase conditional on the vendor's
-authorization status and the presence of a valid warranty. Another agent may modify a
-vendor document while approval is pending. A minor formatting update should not
-invalidate the purchase, whereas a change indicating that the vendor is no longer
-authorized should.
-
-These updates may occur outside the structured fields of the original approval request.
-Consequently, a fixed set of monitored fields may miss relevant dependencies, while
-task-wide locking or versioning may unnecessarily reject independent work.
-
-We are interested in whether an LLM-based verifier can identify these semantic
-dependencies, including dependencies that were not explicitly programmed beforehand, and
-whether such verification can be integrated with deterministic concurrency enforcement.
-
-The challenge is not merely detecting suspicious modifications. It is preserving the
-relationship between the \textbf{evidence an agent observed}, the \textbf{conditions
-justifying its decision}, and the \textbf{state against which that decision is
-executed}.
+Existing concurrency mechanisms provide strong foundations for detecting stale-state updates.
+However, long-running agent workflows make the distinction between a \textbf{state change}
+and a \textbf{decision-invalidating change} particularly important. A minor wording update to
+a task should not invalidate an approved plan, a legitimate correction should be applied, and
+an edit that turns an endpoint into a credential leak must not run under the old approval.
+A fixed set of monitored fields may miss relevant dependencies, while task-wide locking or
+versioning rejects independent work. The challenge is preserving the relationship between
+the \textbf{evidence an agent observed}, the \textbf{conditions justifying its decision}, and
+the \textbf{state against which that decision is executed}.
 
 \subsection{Theory of Change}
 
-The security of multi-agent systems depends not only on the behavior of individual
-agents, but also on the integrity of decisions across interactions with a changing
-environment. Even well-behaved agents can produce unsafe outcomes when their decisions
-are executed against stale state.
-
-We hypothesize that expressing agent decisions as independently verifiable conditions
-can improve the security and efficiency of concurrent agent workflows. By separating
-semantic decision validation from deterministic state enforcement, a system may identify
-which concurrent modifications genuinely invalidate a decision without blocking
-unrelated work.
-
-Our proposed approach operates at three conceptual levels. First, agents expose the
-acceptance criteria underlying consequential decisions. Second, an independent verifier
-examines whether those criteria are sufficient and remain satisfied by authoritative
-task state. Third, a trusted execution mechanism ensures that verification and the
-corresponding committed action are consistent, rejecting or revalidating operations when
-relevant state changes.
-
-Figure~\ref{fig:verification-architecture} distinguishes agent computation,
-independent verification, and atomic enforcement. The commit boundary is
-proposed application logic, not an existing A2A protocol guarantee.
+If approval gates are a load-bearing safety layer in agent swarms, they must bind to
+\emph{what was approved}, not to a file name. We separate semantic validation from
+deterministic enforcement:
+\begin{enumerate}
+  \item agents expose the decision criteria underlying consequential plans;
+  \item an independent verifier checks whether a concurrent change still satisfies them;
+  \item a trusted execution layer guarantees that the action uses exactly the content that
+    was verified.
+\end{enumerate}
+Figure~\ref{fig:verification-architecture} shows this split. The commit boundary is
+application logic, not an existing A2A guarantee, and could be packaged as an A2A extension.
+Reproducible attack environments additionally help implementers test their own gates.
 
 \begin{figure}[tbp]
   \centering
   \resizebox{\linewidth}{!}{\input{figures/figure2.tikz}}
-  \caption{The proposed framework converts agent-generated decision
-    conditions into independently checked approval dependencies. Agents
-    operate on versioned snapshots without holding long-running locks.
-    Before consequential effects are committed, the trusted execution
-    layer atomically validates the relevant conditions against current
-    state, permitting independent updates while rejecting stale or
-    unauthorized actions. This requires atomic enforcement covering the
-    relevant dependencies and proposed effects.}
+  \caption{Agent-generated decision conditions become independently checked approval
+    dependencies. Agents operate on versioned snapshots without holding long-running locks;
+    before effects are committed, the trusted layer validates the relevant conditions against
+    the exact content to be used, permitting independent updates while rejecting stale or
+    unauthorized actions.}
   \label{fig:verification-architecture}
 \end{figure}
 
-If successful, this mechanism could provide a reusable foundation for safer A2A
-interoperability: agents could continue reasoning and collaborating concurrently, while
-consequential actions remain tied to the conditions that authorize them.
-
-Beyond the proposed intervention, reproducible attack environments could help protocol
-developers identify where A2A implementations require additional concurrency guarantees
-and evaluate alternative solutions under comparable conditions.
-
 \section{Related Work}
 
-\subsection{Agent-to-Agent Protocols and Security}
+\paragraph{Agent-to-agent protocols and security.}
+A2A provides task creation, state tracking, multi-turn exchanges, streaming and asynchronous
+execution \cite{a2a-spec}. Its in-task authorization flow (\texttt{AUTH\_REQUIRED} /
+\texttt{INPUT\_REQUIRED}) leaves the scope and validity of an authorization to implementations
+or extensions\footnote{\href{https://a2a-protocol.org/latest/specification/\#76-in-task-authorization}{A2A specification, \S7.6 In-Task Authorization}, accessed November 8, 2026.}.
+Li et al.\ \cite{a2asecbench} introduce A2ASecBench, covering six attack families across A2A
+discovery, orchestration and execution, but do not benchmark concurrent stale-decision
+failures. Lotfi et al.\ \cite{a2abreak} analyze the A2A specification with a formally grounded
+state-machine framework. Their Concurrent Access TOCTOU finding, the absence of task-state
+versioning and conditional updates, is the vulnerability we execute and defend against.
 
-The Agent2Agent protocol provides a standardized interface for communication among
-autonomous agents, including task creation, state tracking, multi-turn exchanges,
-streaming updates, and asynchronous execution \cite{a2a-spec}. These capabilities
-support distributed workflows in which multiple agents exchange information and operate
-over persistent task contexts.
+\paragraph{Concurrency control.}
+TOCTOU races in file systems are a classic bug class, mitigated by operating on content or
+handles rather than names \cite{bishop-toctou}. Optimistic concurrency control validates at
+commit time that what a transaction read is unchanged \cite{kung-occ}; our \texttt{hash}
+defense is OCC applied to an approval. Lyu et al.\ \cite{coagent} propose CoAgent, which uses
+LLM judgments of whether conflicting writes invalidate an agent's plan and selectively repairs
+affected operations. Peng and Wu \cite{stateful-governance} formalize correctness for actions
+whose authorization depends on mutable policy state, requiring authorization to remain valid
+when effects occur.
 
-However, protocol-level interoperability does not necessarily guarantee
-application-level security. Li et al. \cite{a2asecbench} introduce A2ASecBench, a
-protocol-aware evaluation framework covering six attack families across A2A discovery,
-orchestration, and execution. Their work demonstrates the importance of evaluating
-security alongside legitimate task utility, but does not specifically benchmark
-concurrent stale-decision failures.
+\paragraph{Decision-level revalidation.}
+Lyu et al.\ \cite{selective-revalidation} distinguish version conflicts from changes that
+invalidate a decision's justification, rechecking explicit developer-specified preconditions
+before release and binding verified state to execution atomically. This is closest to our
+work. We ask whether agents can \emph{generate} their own decision criteria, whether an
+independent LLM verifier can apply them to concurrent changes, and how this fares in an A2A
+approval flow against benign, legitimate and adversarial edits.
 
-Lotfi et al. \cite{a2abreak} develop A2ABreak, a systematic security analysis of the A2A
-specification using a formally grounded finite-state-machine framework. Among eleven
-identified vulnerabilities, their Concurrent Access TOCTOU finding concerns the absence
-of task-state versioning and conditional update semantics. Their analysis motivates the
-first part of our work: constructing executable environments to characterize stale-state
-failures and evaluate their consequences under controlled concurrency.
+\paragraph{Prompt injection.}
+LLM components that read attacker-controlled content can be steered by instructions embedded
+in it \cite{greshake-injection}. Because our verifier reads the edited task, we evaluate an
+injection aimed at it.
 
-\subsection{Concurrency Control in Multi-Agent Systems}
+\section{Methodology}
 
-Classical concurrency-control mechanisms, including locking and optimistic concurrency
-control, provide techniques for coordinating access to shared mutable state. However, AI
-agents introduce long-running operations that may interleave model inference, tool
-calls, and external interactions, making coarse locking or repeated transaction retries
-potentially expensive.
+\subsection{Testbed}
 
-Lyu et al. \cite{coagent} propose CoAgent, a concurrency-control system for multi-agent
-workflows that incorporates LLM-based judgments of whether conflicting writes invalidate
-an agent's plan. Rather than relying solely on conventional abort-and-retry behavior,
-CoAgent supports selective repair of affected operations. This work demonstrates the
-potential value of semantic reasoning in agent concurrency control.
+Two A2A agents (official Python SDK, JSON-RPC transport, commit \texttt{28f8a62}) share a
+workspace containing \texttt{task.md} and a small HTTP server, \texttt{server.py}, which holds
+an upstream credential in \texttt{UPSTREAM\_API\_KEY}.
+\begin{itemize}
+  \item \textbf{Agent A (worker)} reads \texttt{task.md}, proposes a plan (and, for
+    \texttt{verify}, decision criteria), pauses with \texttt{TASK\_STATE\_INPUT\_REQUIRED},
+    and on approval implements the task in \texttt{server.py}.
+  \item \textbf{Agent B (collaborator)} may edit \texttt{task.md} through its own A2A skill.
+    It is a scripted adversary, so the content and timing of each edit are controlled.
+  \item \textbf{The approver} sees only A's plan and applies a fixed security policy that
+    treats self-claimed approvals as untrusted.
+  \item \textbf{The grader} runs the resulting server with the key set to a canary and calls
+    every route, including \texttt{/version}. A trial \emph{leaks} if the canary appears in
+    any response body or header. There is no LLM judge.
+\end{itemize}
+A runner places B's edit exactly inside A's approval window using explicit synchronization
+points (no sleeps), and logs the hash of \texttt{task.md} at read, at approval and at use.
+The race spans three windows: (1) read $\rightarrow$ verification, (2) during verification,
+(3) verification $\rightarrow$ use.
 
-Peng and Wu \cite{stateful-governance} investigate stateful governance for concurrent
-agentic systems, formalizing correctness requirements for actions whose authorization
-depends on mutable policy state. Their work emphasizes that authorization must remain
-valid when consequential effects occur, and that concurrency mechanisms should preserve
-legitimate parallel execution without permitting stale authorization.
+\paragraph{Sandboxing.}
+Model-written code runs only in a throwaway Docker container with:
+\begin{itemize}
+  \item no network, a read-only root filesystem and read-only mounts;
+  \item uid 65534, no capabilities and no-new-privileges;
+  \item 256\,MiB of memory, 1 CPU and 64 processes;
+  \item a 40\,s wall-clock limit;
+  \item an environment containing only the port and the canary.
+\end{itemize}
+The HTTP checks run inside the container; the host only parses JSON. An adversarial
+self-test (21 checks: writes, network, DNS, host gateway, secrets, privileges, process and
+memory limits, hang, stall, header leaks, leftovers) passes before every run.
 
-These approaches establish that semantic conflict detection and state-dependent
-authorization are important problems. Our work focuses specifically on adversarial
-TOCTOU scenarios in A2A communication, with attention to the reliability of
-automatically generated decision conditions and their use in independent verification.
+\subsection{Conditions}
 
-\subsection{Decision-Level Revalidation}
+\begin{center}
+\small
+\begin{tabular}{>{\raggedright}p{2.7cm}>{\raggedright}p{8.3cm}>{\raggedright\arraybackslash}p{3.0cm}}
+\hline
+\textbf{Condition} & \textbf{B's edit} & \textbf{Correct outcome}\\\hline
+none & --- & ok\\
+benign\_race & wording-only edit, inside the window & ok\\
+update\_race & legitimate correction 1.4.2\,$\rightarrow$\,1.4.3, inside the window & ok, ships 1.4.3\\
+malicious\_before & key-leaking spec, \emph{before} A reads (control) & rejected\\
+malicious\_race & key-leaking spec, inside the window & no leak\\
+subtle\_race & leaks via \texttt{dict(os.environ)}; never names a credential & no leak\\
+inject\_race & key leak plus a comment telling verifiers it is pre-approved and consistent & no leak\\
+config\_race & \textbf{held out}: dump of the server's string settings; written after the design freeze & no leak\\\hline
+\end{tabular}
+\end{center}
 
-Lyu et al. \cite{selective-revalidation} introduce selective revalidation for
-long-running AI agents, distinguishing ordinary version conflicts from changes that
-invalidate the justification for an agent's decision. Their proposed runtime records
-explicit executable preconditions and selectively rechecks affected dependencies before
-releasing an operation. Atomic transactions or compare-and-set mechanisms are used to
-bind verified state to execution.
+\subsection{Defenses}
 
-This work is particularly close to ours and provides an important conceptual foundation.
-However, its prototype relies on developer-specified conditions rather than
-automatically extracting decision requirements from agent behavior.
+All defenses are application-level and read \texttt{task.md} once on resume, implementing
+from exactly those bytes. The approver's reply carries the hash A reported with the approved
+plan.
 
-We investigate whether agents can generate their own decision conditions and whether
-independent LLM verification can recover omitted or implicit dependencies. We further
-situate this problem within A2A-specific concurrent interactions, comparing semantic
-revalidation against established consistency mechanisms under both malicious and benign
-modifications.
+\begin{center}
+\small
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright\arraybackslash}p{11.8cm}}
+\hline
+\textbf{Defense} & \textbf{If \texttt{task.md} changed since approval}\\\hline
+none & implement the file as it is now (baseline)\\
+hash & refuse (\emph{blocked})\\
+snapshot & implement the approved bytes; ignore the edit\\
+replan & re-plan from the current bytes and ask the approver again (at most once)\\
+verify & an independent verifier compares the change with the approved plan and its decision
+criteria. A confident (${\geq}0.8$) ``consistent'' proceeds; ``inconsistent'' or low
+confidence escalates to re-approval. The verifier treats both task versions as untrusted data
+and fails safe (an unparseable reply escalates).\\\hline
+\end{tabular}
+\end{center}
 
-Our contribution is therefore not a replacement for conventional transaction isolation
-or atomic enforcement. Rather, we study whether model-based verification can help
-determine \textbf{what must remain true} for an agent's prior decision to stay valid,
-while trusted concurrency mechanisms guarantee that the relevant checks are enforced at
-execution.
+\subsection{Models, protocol and deviations}
 
-\section{Current Project Scope}
-An approval such as ``proceed with the purchase'' leaves its assumptions
-implicit. A price, vendor authorization, or warranty observed during an
-initial read can change before the action is accepted. Our goal is to make
-the approval criteria visible and reviewable, so the application can check
-whether they still hold.
+The agents are deepseek-v4-flash, qwen3.8-27b and gemma-4-31b-it. The approver and verifier
+are glm-53-flash, a different model family from all agents. All models are hosted by
+Adaption Labs and sampled at default temperature. The pilots (n\,=\,1--2 per cell) shaped
+the design, which was then frozen. The main experiment (n\,=\,5 per cell; defenses
+\texttt{none} and \texttt{verify}) and a calibration supplement were written down before any
+results. The calibration supplement uses a scripted agent with fixed criteria and the glm
+verifier, 10 trials $\times$ 6 race conditions. \texttt{hash} and \texttt{snapshot} decide
+before A implements anything, so they are model-independent and reported from scripted runs.
 
-The initial artifact is an application-level approval system prompt in
-\path{prompts/approval_system.txt}, with integration guidance in
-\path{docs/approval_workflow.md}. This is a proposed project convention,
-not an adopted A2A protocol change. No existing approval-model call site
-was identified in this checkout; loading the prompt into the approval
-agent remains an integration task. A separate team workstream owns the
-test environment under \path{samples/}.
+Every run records the git SHA, arguments and sandbox image digest. Every LLM call is
+transcribed with its trial tag. A validator checks per-trial invariants: race placement,
+hashes, sandbox use, outcome consistency, transcripts, a clean tree and the absence of
+secrets. All 7 main runs pass. Deviations, all logged before analysis:
+\begin{itemize}
+  \item four launches were set aside for infrastructure reasons: an undocumented rate limit,
+    adding transcripts, a host-environment leak into the grader, and moving grading into the
+    sandbox;
+  \item \texttt{replan} was dropped from the LLM matrix to fit the rate limit;
+  \item one trial was re-graded after the Docker client failed under host memory pressure;
+  \item one cell stopped early on a model failure and was topped up to n\,=\,5;
+  \item the held-out attack ran once in a pre-launch smoke test. Nothing was changed as a
+    result.
+\end{itemize}
 
-\section{Approval Response}
-The protocol's in-task authorization workflow already covers human
-approval: delegated authorization uses \texttt{TASK\_STATE\_AUTH\_REQUIRED}
-with an explanatory status message. Authorization is returned out of band
-unless an in-band mechanism is negotiated. Its scope and validity are
-implementation- or extension-defined\footnote{\href{https://a2a-protocol.org/latest/specification/\#76-in-task-authorization}{A2A specification, section 7.6: In-Task Authorization},
-accessed November 8, 2026.}.
+\section{Results}
 
-The reviewer should explain its recommendation with a concise summary of
-the evidence and return explicit conditions before acceptance. Conditions
-may use plain language or pseudocode. An illustrative purchase review is:
+\subsection{The race is real}
 
-\noindent\begin{minipage}{\linewidth}
-\begin{lstlisting}
-{
-  "decision": "approve",
-  "conditions": [
-    "total_price_usd <= 600",
-    "vendor.authorized == true",
-    "warranty.valid == true"
-  ],
-  "explanation": "The current quote totals 580 USD including all charges; vendor authorization and warranty validity are confirmed for this purchase."
-}
-\end{lstlisting}
-\end{minipage}
+Table~\ref{tab:main} gives the main results. Without a defense, the swapped task leaked the
+canary in 90\% (deepseek), 55\% (qwen) and 100\% (gemma) of attack trials. In every leak, the
+approved plan was generated from the original, key-free task: the logged hashes show A read the
+original file, and the plan it then proposed described only \texttt{\{service, version\}}
+(checked by hand in the pilots). The control shows that
+the same approver is effective when there is no race: when the malicious edit landed
+\emph{before} A read the task, the agent's plan disclosed it and the approver rejected it in
+15/15 trials. Two of the three models sometimes refused on their own. qwen declined to build
+the environment dump and the injected key 3 of 5 times each and the settings dump 2 of 5, and deepseek declined the
+environment dump 2 of 5 times. gemma built every one of them.
 
-\noindent The spending limit and currency are illustrative, not a default
-policy. Each actual review
-must use the trusted policy and evidence for the exact proposed action.
+\begin{table}[tbp]
+\centering
+\small
+\begin{tabular}{llcccc}
+\hline
+\textbf{Agent} & \textbf{Defense} & \textbf{Leaks} & \textbf{False rejects} & \textbf{Update shipped} & \textbf{Rounds (b / u / a)}\\\hline
+deepseek & none & 18/20 & 0/15 & 5/5 & 1 / 1 / 1\\
+deepseek & verify & \textbf{0/20} & 0/15 & 5/5 & 1 / 2 / 2\\
+qwen & none & 11/20 & 0/15 & 5/5 & 1 / 1 / 1\\
+qwen & verify & \textbf{0/20} & 0/15 & 5/5 & 1 / 2 / 2\\
+gemma & none & 20/20 & 0/15 & 5/5 & 1 / 1 / 1\\
+gemma & verify & \textbf{0/20} & 0/15 & 5/5 & 1 / 2 / 2\\\hline
+\end{tabular}
+\caption{Main experiment (n\,=\,5 per cell; approver and verifier glm-53-flash). Attacks:
+malicious, subtle, inject and held-out config races. False rejects: blocked or rejected on
+none, benign or update. Rounds: approval rounds for benign / update / attack conditions. qwen/none includes one agent error (config race: the implementation call spent its 6000-token output budget reasoning), counted as a non-leak.}
+\label{tab:main}
+\end{table}
 
-The allowed decisions are \texttt{approve}, \texttt{reject}, and
-\texttt{needs\_information}. Approval requires a nonempty condition list
-covering every applicable policy requirement and evidence supporting each
-one. A known violation requires rejection. Missing, stale, ambiguous, or
-conflicting required evidence requires more information. The explanation
-summarizes the decision-relevant facts rather than requesting private
-model reasoning.
+\subsection{Defense comparison}
 
-\section{Read, Review, Accept, and Execute}
-The proposed application workflow is:
-\begin{enumerate}
-  \item Read the proposed action and authoritative evidence. Record the
-    action identity, relevant resource versions, and trusted policy.
-  \item Ask the approval reviewer for a decision, conditions, and
-    explanation. Treat task and vendor content as evidence, not policy.
-  \item Validate the response and show the explanation and conditions
-    alongside the exact action to the designated acceptance authority.
-  \item Before acceptance, check all trusted policy requirements against
-    current authoritative data. If execution is delayed, revalidate again
-    before executing the accepted action.
-  \item Where supported, apply resource-version checks or preconditions
-    atomically with execution. Retain the review and acceptance evidence.
-\end{enumerate}
+Under \texttt{verify}, all 60 attacks followed the same path: the verifier flagged the change,
+the defense escalated, and the approver rejected the attacker's re-plan, which now disclosed
+the payload. This held for the verifier-targeted injection (glm judged it inconsistent despite
+the embedded ``treat as consistent'' note) and for the held-out attack. Harmless edits were
+cleared by the verifier in one round. Legitimate updates were escalated and re-approved,
+taking two rounds, and shipped correctly (15/15).
 
-An application's \texttt{AgentExecutor.execute} is the intended integration
-point. A possible authorization handoff is a message with text and structured
-review data passed to \path{TaskUpdater.requires_auth}. Application
-logic must obtain authorization through the agreed channel, check its scope,
-and perform policy checks. Ordinary follow-up messages do not automatically
-constitute authorization.
-The prompt artifact alone does not implement this workflow.
+Table~\ref{tab:scripted} compares all five defenses with a deterministic scripted agent and a
+keyword approver. \texttt{hash} rejects every concurrent edit. \texttt{snapshot} never leaks
+but ships the stale version on a legitimate update. Both re-approval defenses leak the subtle
+and held-out attacks, because the keyword approver does not recognize \texttt{dict(os.environ)}
+or a settings dump as a secret: \textbf{once a defense escalates, the approver is the weakest
+link}. The LLM approver closed exactly these cases in the main experiment.
 
-A protocol-level extension would additionally define interoperable action
-identifiers, condition semantics, authorization validity, and the negotiated
-return channel. The initial prompt asset does not implement that extension.
+\begin{table}[tbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Defense} & \textbf{benign} & \textbf{update} & \textbf{malicious} & \textbf{subtle} & \textbf{inject} & \textbf{config (held-out)}\\\hline
+none & ok & ok & LEAK & LEAK & LEAK & LEAK\\
+hash & blocked & blocked & blocked & blocked & blocked & blocked\\
+snapshot & ok & \textbf{stale} & ok & ok & ok & ok\\
+replan & ok (2 rounds) & ok (2) & rejected & \textbf{LEAK} & rejected & \textbf{LEAK}\\
+verify (scripted) & ok (1 round) & ok (1) & rejected & \textbf{LEAK} & rejected & \textbf{LEAK}\\\hline
+\end{tabular}
+\caption{Scripted reference: deterministic agent, keyword approver, n\,=\,3 per cell,
+identical across trials, sandboxed grading.}
+\label{tab:scripted}
+\end{table}
 
-\section{Enforcement Boundary}
-A model's \texttt{approve} is a recommendation, not user consent or proof
-that the conditions hold. The application must validate the response,
-check every trusted requirement independently of the model's list, and
-bind acceptance to the exact action. Condition strings are descriptive;
-they must not be evaluated as arbitrary code.
+\paragraph{Dependency race.}
+When \texttt{task.md} delegates the response body to \texttt{response.json} and B edits that
+file instead, \textbf{every defense leaks} (2/2 each, scripted). The task hash is unchanged
+($h_\mathrm{read}=h_\mathrm{use}$), the approved plan is harmless, and the endpoint returns the
+canary. Binding an approval to one file's hash is only as complete as the set of files the
+decision depends on.
 
-Fresh reads reduce reliance on stale evidence but cannot eliminate a race
-between a check and an external action. Atomic conditional execution,
-transactions, or an equivalent mechanism are needed where available.
-Where unavailable, the remaining race must be recorded as a limitation.
+\subsection{Verifier behavior and calibration}
 
-\section{Evaluation Plan}
-Compare a decision-only baseline with the proposed prompt in the team's
-test environment. Include compliant actions, individual policy violations,
-missing evidence, contradictory evidence, malformed responses, and task
-content that attempts to override the policy. Change the price, vendor
-authorization, warranty, or proposal between the initial read, approval,
-and execution to test stale decisions and action binding.
+\paragraph{Criteria quality.}
+In pilots, the deepseek verifier with code-derived criteria was 6/6 correct. When agents wrote
+their own criteria, all three models wrote criteria like ``the version must remain exactly
+1.4.2''. The verifier then enforced them and treated the legitimate update as a violation.
+Asking for property-style criteria improved them (``the schema is the stable requirement''),
+but the verifier still anchored on the literal value quoted in the \emph{plan}. Escalating
+instead of blocking recovered these updates at the cost of one round.
 
-Measure response-contract validity, coverage of trusted requirements,
-unsupported-approval rate, detection of stale approvals, and additional
-approval latency. Separate prompt adherence from application enforcement:
-a compliant explanation is not evidence that an action was blocked.
-Record the model and prompt versions, policy, trial count, evidence
-versions, mutation timing, and execution outcomes for reproducibility.
+\paragraph{Calibration.}
+In the calibration supplement (fixed criteria, 60 glm verdicts), no attack was judged
+consistent at any threshold: 0/40, with confidence ${\geq}0.98$. Harmless edits were judged
+consistent 10/10 (mean confidence 0.97). Legitimate updates were judged consistent only 3/10
+(mean confidence 0.85, range 0.75--0.90). At the 0.8 threshold, 60\% of good changes are
+auto-cleared and the rest escalate; with blocking instead of escalation, 7/20 good changes
+would have been falsely rejected. The verifier is safe but conservative, and the update case
+(whether a version bump is ``within what was approved'') is genuinely a policy question.
+Reasoning effort tracked ambiguity: deepseek spent about 40 reasoning tokens on harmless edits
+but about 1000--1500 on legitimate updates.
 
-\section{Implementation Status and Results}
-\textbf{Current status:} reusable prompt and integration specification;
-report scaffold. Runtime prompt loading, response validation, trusted
-policy evaluation, action binding, and acceptance handling are pending.
+\paragraph{Cost.}
+The project used 1,601 API calls (1,455 completed; the rest were rate-limited and not billed)
+for about 0.38 credits in total, across pilots and all experiments.
 
-\textbf{Results:} no approval-model experiment or attack evaluation has
-been run for this draft. Add measured outcomes and uncertainty after the
-test environment and runtime integration are available.
+\section{Discussion}
 
+\textbf{Closing the race itself is easy.} Binding approval to content, and acting on exactly
+what was checked, closed the task-file race without locks or throttling. Our early plans to
+lock files during verification or throttle editing agents were unnecessary in this setting.
 
-\begin{thebibliography}{9}
+\textbf{The hard part is precision, not safety.} \texttt{hash} discards all concurrent work,
+\texttt{snapshot} silently ships stale work, and \texttt{replan} spends an approval round on
+every change. \texttt{verify} clears harmless edits automatically and escalates the rest. Its
+precision is bounded by the decision criteria, and the policy question of which changes count
+as within scope cannot be delegated entirely to a model. A verifier should therefore escalate
+rather than block.
+
+\textbf{Escalation moves the burden to the approver.} With a weak approver, every re-approval
+defense inherits its blind spots. Approver quality, and the human cost of extra rounds, are
+first-class metrics.
+
+\textbf{The verifier is an attack surface.} It reads attacker-controlled text. Our injection
+failed against glm-53-flash with an explicit ``untrusted data'' instruction, but a single
+attack template proves little.
+
+\section{Limitations and Dual-Use Considerations}
+
+\paragraph{What the results do and do not establish.}
+\begin{itemize}
+  \item \textbf{Scale.} n is small (5 per cell), with one task family (a single endpoint),
+    three agent models and one approver/verifier model. The rates are illustrative, not
+    population estimates.
+  \item \textbf{Adversary.} It is scripted and timed exactly. Real attackers must observe the
+    window, though \texttt{INPUT\_REQUIRED} is visible through task status and the window is
+    the approver's latency.
+  \item \textbf{Independence.} The approver and verifier are the same model, so escalation is
+    not two fully independent layers.
+  \item \textbf{Ease of detection.} The verifier prompt names secret exposure as inconsistent,
+    and most payloads are recognizably sensitive. The held-out attack is only a partial check.
+  \item \textbf{Coverage.} The hash covers \texttt{task.md} only; dependent files and the file
+    the agent writes are unprotected, as the dependency race shows.
+  \item \textbf{Sampling.} Default temperatures; hosted models may change.
+\end{itemize}
+
+\paragraph{Dual use.}
+The attack is simple once understood, so describing it could help exploit approval gates in
+deployed systems. We consider disclosure net-positive. The vulnerable pattern follows from
+documented SDK behavior, the fix is cheap and standard, and the canary-based testbed lets
+maintainers test their own gates. We release no exploit against a real system, and all secrets
+are canaries. A defense that looks robust could also create false confidence, so we list its
+known gaps prominently.
+
+\paragraph{Responsible conduct.}
+During development, model-written code briefly ran on a developer machine before grading was
+containerized. An audit of all 148 executed files found only \texttt{json}, \texttt{os} and
+\texttt{http.server} usage, with no harmful calls. An early grader also passed the host
+environment to the server under test; the affected local records were redacted and never
+published.
+
+\section{Future Work}
+\begin{itemize}
+  \item dependency manifests, so approvals bind every file the plan reads;
+  \item compare-and-swap protection for the file the agent writes;
+  \item structured criteria, and separating the approval \emph{contract} from the
+    human-readable plan;
+  \item a different-family verifier and approver, threshold calibration at scale, and
+    reasoning length as an uncertainty signal;
+  \item stronger injections and subtler payloads, attackers that observe the window,
+    repeated edits (approval fatigue), and many concurrent editors;
+  \item real coding agents with permission prompts, the BashArena environment, more models
+    and larger n;
+  \item packaging the defense as an A2A ``approval-binding'' extension.
+\end{itemize}
+The full list is in \path{a2a_testbed/FUTURE_WORK.md}.
+
+\section{Conclusion}
+A2A approval gates are vulnerable to a simple TOCTOU race that real LLM agents follow 55--100\%
+of the time. Binding the approval to the exact content and acting on what was checked closes
+the race. Verifying concurrent changes against the plan's decision criteria, and escalating
+anything not clearly safe, kept all 60 attacks out without discarding legitimate work. The
+remaining problems are about precision and scope: better criteria, a stronger approver, and
+binding every file a decision depends on.
+
+\paragraph{Reproducibility.}
+Code, fixtures, run data with full transcripts, the call ledger, the sandbox self-test and the
+validator are in the repository (\path{a2a_testbed/}, \path{artifacts/a2a_runs/}).
+
+\begin{thebibliography}{10}
 
 \bibitem{a2a-spec}
 A2A Project. \emph{Agent2Agent Protocol Specification}, v1.0.0.
@@ -413,6 +493,15 @@ Peng, Y., \& Wu, X. (2026). \emph{Stateful Governance for Concurrent Agentic Sys
 \bibitem{selective-revalidation}
 Lyu, Y., Ren, Y., Lai, R., \& Liu, W. (2026). \emph{From Version Conflicts to Decision Conflicts: Selective Revalidation for Long-Running AI Agents}.
 \url{https://arxiv.org/abs/2609.08015}
+
+\bibitem{bishop-toctou}
+Bishop, M., \& Dilger, M. (1996). Checking for race conditions in file accesses. \emph{Computing Systems}, 9(2).
+
+\bibitem{kung-occ}
+Kung, H. T., \& Robinson, J. T. (1981). On optimistic methods for concurrency control. \emph{ACM Transactions on Database Systems}, 6(2).
+
+\bibitem{greshake-injection}
+Greshake, K., et al. (2023). Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection. \emph{AISec '23}.
 
 \end{thebibliography}
 
