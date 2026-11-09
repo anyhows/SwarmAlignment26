@@ -230,6 +230,12 @@ The design was frozen after the pilots above; every run records its git SHA in `
 - **Calibration supplement:** scripted agent and criteria with the glm verifier, 10 trials ×
   6 race conditions. This separates verifier calibration from criteria quality. `update_race`
   is reported both ways, since whether it "should" count as consistent is a policy choice.
+- **Deviation (16:45):** the first launch hit an undocumented API rate limit (~30–40
+  requests/min per user; HTTP 429, not billed). Three runs aborted, and their partial results
+  are kept separately in `artifacts/a2a_runs/aborted/`. `llm.py` now waits and retries on 429
+  only. To fit the time available, `replan` was **dropped from the LLM matrix**: it's reported
+  from the scripted runs and pilots, and `verify` (escalate) contains the same re-approval
+  path. No other part of the design changed.
 - Results are stored under `artifacts/a2a_runs/main/` and `artifacts/a2a_runs/calibration/`,
   and summarized with `summarize.py artifacts/a2a_runs/main`.
 

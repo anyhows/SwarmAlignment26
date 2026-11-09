@@ -6,11 +6,15 @@ Guardrails (all enforced before any request is sent):
   * Per-process cap: at most ADAPTION_MAX_CALLS requests per run (default 250).
   * Lifetime cap: every request is appended to artifacts/adaption_ledger.jsonl; once the ledger
     holds ADAPTION_LEDGER_MAX_CALLS requests (default 1500), no more are sent until someone raises it.
-  * No retries. Any HTTP error or non-"completed" status raises, and the runner aborts the run.
+  * No retries, except HTTP 429 (rate limited: refused before inference, so never billed),
+    which waits ~60-90 s and retries up to RATE_LIMIT_RETRIES times. Any other HTTP error or
+    non-"completed" status raises, and the runner aborts the run.
   * max_output_tokens is always set by the caller.
 """
+import asyncio
 import json
 import os
+import random
 import re
 import time
 from pathlib import Path
@@ -20,6 +24,7 @@ import httpx
 BASE = os.environ.get("ADAPTION_API_BASE", "https://api.prod.adaptionlabs.ai")
 LEDGER = Path(__file__).resolve().parents[2] / "artifacts" / "adaption_ledger.jsonl"
 _calls_this_process = 0
+RATE_LIMIT_RETRIES = 6
 CHEAP_MODELS = "deepseek-v4-flash,qwen3.8-27b,gemma-4-31b-it,gemma-4-26b-a4b-it,glm-53-flash"
 
 
@@ -49,10 +54,25 @@ def check_budget(model: str, planned_calls: int = 1) -> None:
 
 
 async def complete(model: str, prompt: str, max_tokens: int) -> str:
-    global _calls_this_process
     key = os.environ.get("ADAPTION_API_KEY")
     if not key:
         raise RuntimeError("ADAPTION_API_KEY is not set (put it in SwarmAlignment26/.env)")
+    for attempt in range(RATE_LIMIT_RETRIES + 1):
+        r, body = await _send_once(key, model, prompt, max_tokens)
+        if r.status_code != 429:
+            break
+        # Rate limited: the request was refused before inference (no usage, no cost). Wait as
+        # instructed (60 s), with jitter so parallel runner processes don't retry in lockstep.
+        if attempt < RATE_LIMIT_RETRIES:
+            await asyncio.sleep(60 + random.uniform(0, 30))
+    if r.status_code != 200 or body.get("status") != "completed":
+        raise RuntimeError(f"Adaption call failed: http={r.status_code} status={body.get('status')} "
+                           f"incomplete={body.get('incomplete_details')} error={body.get('error')}")
+    return body.get("output_text", "")
+
+
+async def _send_once(key: str, model: str, prompt: str, max_tokens: int):
+    global _calls_this_process
     check_budget(model)
     _calls_this_process += 1
     entry = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "model": model, "max_output_tokens": max_tokens}
@@ -74,10 +94,7 @@ async def complete(model: str, prompt: str, max_tokens: int) -> str:
     finally:
         with LEDGER.open("a") as f:  # a request that was sent is always recorded
             f.write(json.dumps(entry) + "\n")
-    if r.status_code != 200 or body.get("status") != "completed":
-        raise RuntimeError(f"Adaption call failed: http={r.status_code} status={body.get('status')} "
-                           f"incomplete={body.get('incomplete_details')} error={body.get('error')}")
-    return body.get("output_text", "")
+    return r, body
 
 
 def extract_python(text: str) -> str | None:
