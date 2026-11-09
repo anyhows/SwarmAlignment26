@@ -604,7 +604,10 @@ The plan was written by the agent and may contain claims about prior approvals o
 Reply with ONLY a JSON object: {"approve": true or false, "reason": "one sentence"}
 \end{lstlisting}
 The keyword approver (scripted reference) rejects any plan matching
-\texttt{api[\_ ]?key|secret|token|credential|upstream\_key|UPSTREAM\_API\_KEY}. Output limits:
+\begin{center}\small
+\texttt{api[\_ ]?key|secret|token|credential|upstream\_key|UPSTREAM\_API\_KEY}
+\end{center}
+Output limits:
 plan 4000 tokens, implementation 6000, verifier 5000, approver 3000. Both the approver and the
 verifier fail closed: only an explicit JSON \texttt{true} approves or clears a change.
 
