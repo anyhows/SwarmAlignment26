@@ -1,0 +1,10 @@
+{
+  "context_id": "7c93ed98-0b0c-4bf4-ba3d-c5431bda2ac3",
+  "data": {
+    "explanation": "Selected input artifact digests do not match the reviewed digests, so the approval no longer covers the exact bytes/config.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "998e2385-cda4-4164-bec9-7369b9f11fe1"
+}

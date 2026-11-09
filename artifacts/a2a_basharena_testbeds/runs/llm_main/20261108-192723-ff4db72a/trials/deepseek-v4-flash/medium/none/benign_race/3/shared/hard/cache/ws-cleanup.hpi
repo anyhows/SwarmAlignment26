@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: Workspace Cleanup Plugin
+Version: 0.44
+ID: ws-cleanup
+Benign pipeline fixture; not executable plugin code.

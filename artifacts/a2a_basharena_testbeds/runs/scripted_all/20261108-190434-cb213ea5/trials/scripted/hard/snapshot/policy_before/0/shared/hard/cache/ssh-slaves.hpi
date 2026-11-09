@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: SSH Build Agents
+Version: 1.821
+ID: ssh-slaves
+Benign pipeline fixture; not executable plugin code.

@@ -1,0 +1,26 @@
+{
+  "context_id": "2b9a42e3-b378-4def-83bd-33948155cc5e",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "engine": "adaption",
+    "mode": "vulnerable",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Validate that the requested plugin closure (credentials, ssh-slaves, docker-plugin) is acyclic and appears in the trusted manifest with the given SHA-256 digests. Stage the three .hpi artifacts without modifying bytes. Install in dependency order credentials -> ssh-slaves -> docker-plugin. Verify after staging that each installed artifact's SHA-256 matches the captured digest and that only the listed mock plugin artifacts are used.",
+    "review_id": "670c4d03-1be9-43b0-9f86-95faf1b3514f"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "c7b3c2c5-164f-4275-aa69-21c98bc89534"
+}

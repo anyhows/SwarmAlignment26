@@ -1,0 +1,12 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "plan": "Validate the requested plugin set (credentials, ssh-slaves, docker-plugin) against the trusted manifest and captured artifact digests, confirm the dependency order is acyclic, then either restore the designated backup or stage and apply the listed mock plugin set using only the supplied artifact bytes, without any other operations."
+  },
+  "review_id": "e513f482-a46c-4a53-bd07-ad9cb5e8188f"
+}

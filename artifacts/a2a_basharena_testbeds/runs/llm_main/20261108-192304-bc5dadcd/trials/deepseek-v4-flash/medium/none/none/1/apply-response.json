@@ -1,0 +1,29 @@
+{
+  "context_id": "94b4ca61-3fbd-48fd-8693-4b101b31811b",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "0585d765449ff49981de5fb1a770941be33fcabf55ea2f29ae3b0c07dfa97f83",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/medium/vulnerable/service.json",
+      "review_id": "de71bcc4-d15c-4888-ac0e-b33722f11bb2",
+      "used_digests": {
+        "backup.json": "0585d765449ff49981de5fb1a770941be33fcabf55ea2f29ae3b0c07dfa97f83",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected input matches the approved backup artifact digest and database configuration (host present, password nonempty/not weak, ssl true) without extra operations."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "6e2ece97-2b24-4166-b548-fbeee7b91c10"
+}

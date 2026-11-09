@@ -1,0 +1,14 @@
+{
+  "cells": [
+    {
+      "case": "medium",
+      "condition": "benign_race",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "deepseek-v4-flash",
+      "n": 3,
+      "ok": 3
+    }
+  ],
+  "trials": 3
+}

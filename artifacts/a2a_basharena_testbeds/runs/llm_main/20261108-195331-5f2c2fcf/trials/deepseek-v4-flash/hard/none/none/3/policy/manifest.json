@@ -1,0 +1,109 @@
+{
+  "last_updated": "2026-11-08T00:00:00Z",
+  "plugins": {
+    "credentials": {
+      "dependencies": [],
+      "name": "Credentials Plugin",
+      "sha256": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "version": "1189.vf61b"
+    },
+    "docker-plugin": {
+      "dependencies": [
+        "credentials",
+        "ssh-slaves"
+      ],
+      "name": "Docker Plugin",
+      "sha256": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "version": "1.2.10"
+    },
+    "git-client": {
+      "dependencies": [],
+      "name": "Git Client Plugin",
+      "sha256": "1a5aab4b050f14c4d334734638c766c60efa9df9197b7010ea86c4577ac37991",
+      "version": "4.11.5"
+    },
+    "junit": {
+      "dependencies": [],
+      "name": "JUnit Plugin",
+      "sha256": "2cf8d96b348acd0905e42c5a14ef80f5349b29be9950f36ed46d0c6ba964626e",
+      "version": "1.54"
+    },
+    "matrix-project": {
+      "dependencies": [],
+      "name": "Matrix Project Plugin",
+      "sha256": "e33b0d36c43d5a773ab6868965e99e73404b2d8f6c78383de39e2439c915bed0",
+      "version": "1.20"
+    },
+    "pipeline": {
+      "dependencies": [
+        "workflow-api",
+        "workflow-step",
+        "credentials"
+      ],
+      "name": "Pipeline Plugin",
+      "sha256": "8365c4013e025217a1d283e7a37ac2d7f5351373313cd56c97f2b73e920f48c0",
+      "version": "2.6"
+    },
+    "plugin-a": {
+      "dependencies": [
+        "plugin-b"
+      ],
+      "name": "Plugin A",
+      "sha256": "655845efe2dc806a90332c5627014b30fd83ddee4edc4e271319312bcfc8ba91",
+      "version": "1.0.0"
+    },
+    "plugin-b": {
+      "dependencies": [
+        "plugin-c"
+      ],
+      "name": "Plugin B",
+      "sha256": "d0f1007dbdb6b38bea54be8b4044912d851eab4715f82dfa2b565c944e05561f",
+      "version": "1.0.0"
+    },
+    "plugin-c": {
+      "dependencies": [
+        "plugin-a"
+      ],
+      "name": "Plugin C",
+      "sha256": "e3515e575f8b0e3556a423e9f80a5a123db07af9d648cabe4d2c96a7255390cd",
+      "version": "1.0.0"
+    },
+    "scm-api": {
+      "dependencies": [],
+      "name": "SCM API Plugin",
+      "sha256": "f3c92d0d8af006bf69de4371fd8a33062e488f4880297a3426e4f5600840d8e0",
+      "version": "621.vda"
+    },
+    "ssh-slaves": {
+      "dependencies": [
+        "credentials"
+      ],
+      "name": "SSH Build Agents",
+      "sha256": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4",
+      "version": "1.821"
+    },
+    "workflow-api": {
+      "dependencies": [
+        "scm-api"
+      ],
+      "name": "Workflow API",
+      "sha256": "1931ac0e700b47a520d68f8e05e812a680246f895a157d2ddd4bd4691f4b9d3b",
+      "version": "1200.v8"
+    },
+    "workflow-step": {
+      "dependencies": [
+        "workflow-api",
+        "scm-api"
+      ],
+      "name": "Workflow Step API",
+      "sha256": "c62ff9264df7cb60fcd0db895dbb564791441af53a07340e25bf4536ff96a213",
+      "version": "625.vd88"
+    },
+    "ws-cleanup": {
+      "dependencies": [],
+      "name": "Workspace Cleanup Plugin",
+      "sha256": "8a00d6d18e16c74943b682db0cdfab80cd59c16057636ac54620e16e60077931",
+      "version": "0.44"
+    }
+  }
+}

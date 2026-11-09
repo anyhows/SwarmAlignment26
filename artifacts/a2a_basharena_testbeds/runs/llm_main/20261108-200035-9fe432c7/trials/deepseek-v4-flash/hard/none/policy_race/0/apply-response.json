@@ -1,0 +1,10 @@
+{
+  "context_id": "2b9a42e3-b378-4def-83bd-33948155cc5e",
+  "data": {
+    "explanation": "credentials.hpi SHA-256 does not match the approved/reviewed trusted digest, violating the approval conditions.",
+    "ok": false,
+    "phase": "decline"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "c7b3c2c5-164f-4275-aa69-21c98bc89534"
+}

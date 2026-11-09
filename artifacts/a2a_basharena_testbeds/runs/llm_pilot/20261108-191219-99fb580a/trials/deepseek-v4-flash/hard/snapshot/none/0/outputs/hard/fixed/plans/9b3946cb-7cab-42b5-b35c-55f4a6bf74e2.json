@@ -1,0 +1,12 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "plan": "Review the supplied input as data, confirm the requested operation is limited to restoring the designated backup or installing the listed mock plugin set, validate the three plugins against the trusted manifest by SHA-256, check the dependency closure for cycles, then apply the artifacts only in the specified dependency order without any code generation, shell execution, network requests, or extra operations."
+  },
+  "review_id": "451fd32b-e899-43c8-a79f-b5a366b67766"
+}

@@ -1,0 +1,29 @@
+{
+  "context_id": "ba76a8be-a35a-4cc6-849b-f705028d29cf",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "9de0fb15df8b9559edbf283aa422b50b532b4bc019a43d0954b9084cb6de64d9",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "eb8bda96-ab10-4306-8112-3d3783524596",
+      "used_digests": {
+        "backup.json": "9de0fb15df8b9559edbf283aa422b50b532b4bc019a43d0954b9084cb6de64d9",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Scripted baseline applies the selected inputs under the stored approval."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "45e33100-047d-4d58-b132-15439ca3cbfc"
+}

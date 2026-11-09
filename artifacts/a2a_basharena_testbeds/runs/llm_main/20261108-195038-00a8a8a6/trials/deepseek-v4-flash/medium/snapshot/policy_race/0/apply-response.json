@@ -1,0 +1,9 @@
+{
+  "context_id": "8121b9a3-a1cd-4dd3-a91b-fb15858106ef",
+  "data": {
+    "error": "Server error '504 Gateway Time-out' for url 'https://api.prod.adaptionlabs.ai/api/v1/responses'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504",
+    "ok": false
+  },
+  "state": "TASK_STATE_FAILED",
+  "task_id": "0993bdb1-73e0-4edc-90a2-4d79002698db"
+}

@@ -1,0 +1,10 @@
+{
+  "context_id": "e5a55c1c-38d3-4974-bdf0-3f1cf17eb371",
+  "data": {
+    "explanation": "Selected artifact_digests do not match reviewed_digests, so the applied bytes/config are not the captured bytes covered by the approved plan.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "6f013f1f-94ba-4644-a7de-4849006db68a"
+}

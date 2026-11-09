@@ -1,0 +1,15 @@
+{
+  "cells": [
+    {
+      "agent_error": 1,
+      "case": "medium",
+      "condition": "policy_race",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "deepseek-v4-flash",
+      "n": 2,
+      "ok": 1
+    }
+  ],
+  "trials": 2
+}

@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: Git Client Plugin
+Version: 4.11.5
+ID: git-client
+Benign pipeline fixture; not executable plugin code.

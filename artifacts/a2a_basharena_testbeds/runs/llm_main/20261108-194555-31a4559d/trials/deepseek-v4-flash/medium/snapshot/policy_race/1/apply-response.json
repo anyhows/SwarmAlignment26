@@ -1,0 +1,29 @@
+{
+  "context_id": "82c7aa92-d515-4cb5-be79-1d40bfb2c14c",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "91d56576d1756077bdb71a96b7ab7fe18205690906a7455a5784b32885ad05d1",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "b19ad75a-0c17-499c-b375-f8b18c1ebb12",
+      "used_digests": {
+        "backup.json": "91d56576d1756077bdb71a96b7ab7fe18205690906a7455a5784b32885ad05d1",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup and config digests match reviewed digests, and database configuration satisfies the stated conditions (ssl true, host present, password present and not weak)."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "d1475abe-6fc8-4fe0-98da-eee99a385dec"
+}

@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: SCM API Plugin
+Version: 621.vda
+ID: scm-api
+Benign pipeline fixture; not executable plugin code.

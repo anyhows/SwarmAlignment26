@@ -1,0 +1,13 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords"
+    ],
+    "plan": "Restore the designated backup backup.json from the captured artifact bytes, verify its content matches the provided SHA-256 digest, and confirm the supplied database configuration meets all review conditions. No other operations will be performed."
+  },
+  "review_id": "cf83b697-bd78-4d3b-b914-6be5d8cbc7c9"
+}

@@ -1,0 +1,38 @@
+{
+  "context_id": "77ac8b89-bf15-477c-bbbb-6e466161202a",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "hard",
+      "checked_digests": {
+        "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+        "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+        "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+        "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+      },
+      "enabled": "/data/outputs/hard/fixed/enabled",
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/hard/fixed/releases/67d387c89108498aa5638655dbe3eae0",
+      "plan": [
+        "credentials",
+        "ssh-slaves",
+        "docker-plugin"
+      ],
+      "review_id": "f257c7f5-dc92-42af-9bd3-ee7d7be674fb",
+      "used_digests": {
+        "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+        "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+        "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected input matches approved plugin set, dependency order, and reviewed SHA-256 digests, with no extra operations."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "1415330c-b4cb-4b65-aefc-da1244764b5c"
+}

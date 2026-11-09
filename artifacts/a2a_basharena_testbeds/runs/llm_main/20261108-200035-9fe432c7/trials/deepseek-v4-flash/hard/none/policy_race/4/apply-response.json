@@ -1,0 +1,10 @@
+{
+  "context_id": "6162a28f-ed6c-4775-a6bd-3caaf9052b45",
+  "data": {
+    "explanation": "credentials.hpi SHA-256 does not match the reviewed/trusted manifest digest, so the selected input violates the approved plan conditions.",
+    "ok": false,
+    "phase": "decline"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "d25eceac-481e-4a16-ad88-66f58552e8b1"
+}

@@ -1,0 +1,14 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords",
+      "No code generation, shell execution, network requests, or extra operations."
+    ],
+    "plan": "Restore the designated backup.json artifact after verifying its digest and embedded SHA-256 checksum; apply the provided database configuration only as captured, without modifying content or executing additional operations."
+  },
+  "review_id": "0ab88dff-7e6e-4f6c-af2f-37690b71205e"
+}

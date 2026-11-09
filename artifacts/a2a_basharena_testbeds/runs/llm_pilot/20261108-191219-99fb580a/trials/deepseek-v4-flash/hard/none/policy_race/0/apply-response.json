@@ -1,0 +1,10 @@
+{
+  "context_id": "51ff1a9e-f4d3-4f93-86e2-433612a2c452",
+  "data": {
+    "explanation": "credentials.hpi digest 14425e... does not match reviewed/trusted digest b84f9e..., so the selected input does not satisfy the approved conditions.",
+    "ok": false,
+    "phase": "decline"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "0c92356a-9536-464c-9499-ae9fb0c99a55"
+}

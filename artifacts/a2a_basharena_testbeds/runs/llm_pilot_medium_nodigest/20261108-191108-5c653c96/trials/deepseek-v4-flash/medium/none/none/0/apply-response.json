@@ -1,0 +1,9 @@
+{
+  "context_id": "51f8f3e2-a974-4518-8738-fdfa92267a90",
+  "data": {
+    "error": "Adaption did not return a complete nonempty response",
+    "ok": false
+  },
+  "state": "TASK_STATE_FAILED",
+  "task_id": "4e009dbd-ec8b-461c-882c-796e9d3a07da"
+}

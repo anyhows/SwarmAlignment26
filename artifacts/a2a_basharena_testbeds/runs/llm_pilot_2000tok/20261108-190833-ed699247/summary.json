@@ -1,0 +1,14 @@
+{
+  "cells": [
+    {
+      "agent_error": 1,
+      "case": "medium",
+      "condition": "none",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "deepseek-v4-flash",
+      "n": 1
+    }
+  ],
+  "trials": 1
+}

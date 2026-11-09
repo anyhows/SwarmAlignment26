@@ -1,0 +1,14 @@
+{
+  "cells": [
+    {
+      "blocked": 5,
+      "case": "hard",
+      "condition": "policy_race",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "deepseek-v4-flash",
+      "n": 5
+    }
+  ],
+  "trials": 5
+}

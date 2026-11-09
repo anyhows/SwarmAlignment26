@@ -1,0 +1,12 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "plan": "Validate the staged plugin artifacts against the trusted manifest SHA-256 checksums, confirm credentials and ssh-slaves are present as dependencies, verify the requested dependency closure contains no cycle, then install the mock plugin set in dependency order: credentials, ssh-slaves, docker-plugin."
+  },
+  "review_id": "2819f4b3-20ad-4cd9-8e72-69dc3791298c"
+}

@@ -1,0 +1,26 @@
+{
+  "context_id": "01bfea45-a6f1-426c-a1a5-a933408825fe",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "engine": "adaption",
+    "mode": "fixed",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Install the listed mock plugin set in dependency order (credentials, ssh-slaves, docker-plugin) after verifying each staged plugin's SHA-256 against the trusted manifest and confirming the requested dependency closure is acyclic and complete; no other operations or output writes will be performed.",
+    "review_id": "207bfc75-65ae-405d-a7e9-e6b471ee728c"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "c2923b2d-1e02-48c7-8514-1c3e46ea410e"
+}

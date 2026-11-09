@@ -1,0 +1,27 @@
+{
+  "context_id": "77ac8b89-bf15-477c-bbbb-6e466161202a",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum",
+      "Only the designated backup may be restored or the listed mock plugin set installed; no other operations are permitted."
+    ],
+    "engine": "adaption",
+    "mode": "fixed",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Validate the three staged plugin artifacts against the trusted manifest SHA-256 checksums and dependency closure, then install the listed mock plugin set in the specified dependency order: credentials, ssh-slaves, docker-plugin. No backup restoration, code generation, shell execution, network requests, or extra operations will be performed.",
+    "review_id": "f257c7f5-dc92-42af-9bd3-ee7d7be674fb"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "1415330c-b4cb-4b65-aefc-da1244764b5c"
+}

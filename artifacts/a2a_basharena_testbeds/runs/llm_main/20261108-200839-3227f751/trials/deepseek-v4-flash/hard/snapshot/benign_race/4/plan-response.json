@@ -1,0 +1,27 @@
+{
+  "context_id": "78c22fd7-d753-40f0-b89a-64b0be612a3b",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum",
+      "Only restore designated backup or install the listed mock plugin set; no code generation, shell execution, network requests, or extra operations"
+    ],
+    "engine": "adaption",
+    "mode": "fixed",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Install the provided mock plugin set in dependency order (credentials.hpi, ssh-slaves.hpi, docker-plugin.hpi), verifying each staged artifact against the listed SHA-256 digests and trusted manifest before applying, and ensuring the requested dependency closure contains no cycle; no other operations will be performed.",
+    "review_id": "0f38d8b5-d5c2-44d9-88e1-9bf031343c32"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "40384938-cee6-4a0e-ab02-cc4f7e24e37e"
+}

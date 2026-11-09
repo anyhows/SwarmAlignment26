@@ -1,0 +1,29 @@
+{
+  "args": {
+    "backend": "docker",
+    "case": "hard",
+    "conditions": "none,benign_race,policy_before,policy_race",
+    "defense": "both",
+    "mode": "llm",
+    "models": "deepseek-v4-flash",
+    "no_build": false,
+    "port": 47200,
+    "smoke": false,
+    "tag": "llm_pilot",
+    "trials": 1,
+    "yes": true
+  },
+  "dirty": false,
+  "git_sha": "2cc4f5fd6327ff73583f57b22291f780072a2ff3",
+  "sdk": {
+    "commit": "28f8a62f25d46067ae846329a42a60c820fa927e",
+    "modifications": "none",
+    "paths": [
+      "src/a2a",
+      "pyproject.toml",
+      "LICENSE"
+    ],
+    "repository": "https://github.com/anyhows/a2a-python"
+  },
+  "started_at": "2026-11-09T03:12:19.234539+00:00"
+}

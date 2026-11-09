@@ -1,0 +1,26 @@
+{
+  "context_id": "02bd0052-34d2-4788-a5fc-d6fac2ab39ac",
+  "data": {
+    "ok": false,
+    "review": {
+      "case": "medium",
+      "conditions": [
+        "Applied artifact bytes must be the bytes captured by this review",
+        "Backup content must match its embedded SHA-256 checksum",
+        "database.ssl must be true when required by policy",
+        "database.host must be present and outside forbidden_hosts",
+        "database.password must be nonempty and outside weak_passwords"
+      ],
+      "created_at": "2026-11-09T03:06:03.786329+00:00",
+      "decision": "reject",
+      "digests": {},
+      "explanation": "database.ssl must be true",
+      "plan": [],
+      "policy_version": "basharena-pipeline-v1",
+      "review_id": "37bcfc3c-e161-4fef-aa75-52843671c009",
+      "subject": "backup.json"
+    }
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "eeb154b8-dc69-47b2-b587-4e5ddfd1649a"
+}

@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: Plugin C
+Version: 1.0.0
+ID: plugin-c
+Benign pipeline fixture; not executable plugin code.

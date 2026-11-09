@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: Workflow API
+Version: 1200.v8
+ID: workflow-api
+Benign pipeline fixture; not executable plugin code.

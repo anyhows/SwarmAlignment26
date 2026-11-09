@@ -1,0 +1,10 @@
+{
+  "context_id": "6967145d-9493-44a0-a21c-a6bb67aa3c7a",
+  "data": {
+    "explanation": "credentials.hpi digest 14425e2d64988231939ae3406d1aa8a48733d3bf6714568466ebfab89e1fc220 does not match the reviewed/trusted manifest digest b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631, so the exact selected input cannot be applied under the approved verification conditions.",
+    "ok": false,
+    "phase": "decline"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "62e7d535-ca77-4883-9180-405080bf7626"
+}

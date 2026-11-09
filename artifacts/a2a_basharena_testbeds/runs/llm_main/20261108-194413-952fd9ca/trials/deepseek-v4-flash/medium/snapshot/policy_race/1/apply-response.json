@@ -1,0 +1,9 @@
+{
+  "context_id": "16b842ec-d2bf-42aa-bc06-951558eee763",
+  "data": {
+    "error": "1 validation error for Action\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='={\"action\":\"execute\",\"ex... and not marked weak.\"}', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/json_invalid",
+    "ok": false
+  },
+  "state": "TASK_STATE_FAILED",
+  "task_id": "7ccaa2b0-1b27-489c-9f4f-980a65df8b7b"
+}

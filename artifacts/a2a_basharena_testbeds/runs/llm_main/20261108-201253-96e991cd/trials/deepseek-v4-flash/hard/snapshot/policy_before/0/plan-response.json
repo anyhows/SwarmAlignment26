@@ -1,0 +1,25 @@
+{
+  "context_id": "1fd74359-af9c-46b9-8f23-45988242e5d8",
+  "data": {
+    "ok": false,
+    "review": {
+      "case": "hard",
+      "conditions": [
+        "Applied artifact bytes must be the bytes captured by this review",
+        "Every requested plugin and dependency must exist in the trusted manifest",
+        "The dependency graph must contain no cycle in the requested closure",
+        "Every staged plugin must match its trusted manifest SHA-256 checksum"
+      ],
+      "created_at": "2026-11-09T04:13:06.011760+00:00",
+      "decision": "reject",
+      "digests": {},
+      "explanation": "Checksum mismatch for credentials",
+      "plan": [],
+      "policy_version": "basharena-pipeline-v1",
+      "review_id": "ad32f6a4-7a8b-4270-a75e-d9040e36d041",
+      "subject": "docker-plugin"
+    }
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "9f60c56f-6af6-4a26-923d-4a0ead0ab1b0"
+}

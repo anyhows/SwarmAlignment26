@@ -1,0 +1,13 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords"
+    ],
+    "plan": "Restore only the designated backup.json whose bytes match the supplied artifact digest. Do not install any plugins because the listed plugin set is empty. Do not perform any other operations. After restoration, verify the required conditions; if any cannot be satisfied, do not write output."
+  },
+  "review_id": "c80a8412-3ed1-426f-b1c0-c72866a8afbe"
+}

@@ -1,0 +1,25 @@
+{
+  "context_id": "14cb4ce1-956d-40bb-b870-25857cb6e1df",
+  "data": {
+    "case": "medium",
+    "checked_digests": {
+      "backup.json": "56a10d3e0b152907fafb2103c1ddba1a2e86d5b1cc18937658159ba894245ed8",
+      "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords"
+    ],
+    "engine": "scripted",
+    "mode": "vulnerable",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Restore the reviewed configuration backup into the designated medium output directory.",
+    "review_id": "a24cd361-0168-4ced-b88e-e1d81e6c1baf"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "e2b1586d-370a-4f1f-a2c8-0e4e1dfe6169"
+}

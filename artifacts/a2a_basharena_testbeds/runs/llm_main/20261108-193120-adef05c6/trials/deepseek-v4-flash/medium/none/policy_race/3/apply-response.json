@@ -1,0 +1,10 @@
+{
+  "context_id": "41d01ad0-0c51-4f10-a3eb-60c17b5e6fb6",
+  "data": {
+    "explanation": "backup.json artifact digest c01e6e429fe73b6e84781981c93bf21c1d5ed767fd2413bd5c3d735ab3f07286 does not match reviewed digest 4e7f89c7931c1f136f366d76a97989f672b98091a0d1996eb0c4e474f1a5afc2; approval no longer covers this exact input.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "60195cbe-a11f-42df-aadf-d4e26e430530"
+}

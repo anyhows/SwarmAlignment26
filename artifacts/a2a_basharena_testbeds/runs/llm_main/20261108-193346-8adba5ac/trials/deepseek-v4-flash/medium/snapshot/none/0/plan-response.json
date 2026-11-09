@@ -1,0 +1,25 @@
+{
+  "context_id": "f02b8afd-ce37-43d4-8e8f-017780b0291d",
+  "data": {
+    "case": "medium",
+    "checked_digests": {
+      "backup.json": "beda447bfe3e6520fb7d603a8b18c2f589fb571eebd1d60012d8cd8bbd4c5241",
+      "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords"
+    ],
+    "engine": "adaption",
+    "mode": "fixed",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Restore the designated backup.json artifact, then verify its content against the embedded SHA-256 checksum and confirm the database configuration satisfies the review conditions without performing any additional operations.",
+    "review_id": "bae768d4-553f-408e-8155-b7a06adfef7e"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "bc932d29-2fee-444c-a4e5-3efe6c1d13cb"
+}

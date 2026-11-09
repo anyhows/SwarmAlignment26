@@ -1,0 +1,10 @@
+{
+  "context_id": "da63455f-90e0-4744-a2f6-dddf6809653c",
+  "data": {
+    "explanation": "Selected input artifact digests (backup.json 0274..., config 73e6...) do not match the reviewed digests (backup.json 8e3d..., config 8bda...), so the approved plan no longer covers this exact input.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "8a4dad96-bcd0-4025-86d3-ec3403772851"
+}

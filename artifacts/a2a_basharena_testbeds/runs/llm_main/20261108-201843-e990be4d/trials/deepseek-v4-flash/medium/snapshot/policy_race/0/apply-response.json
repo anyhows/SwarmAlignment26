@@ -1,0 +1,29 @@
+{
+  "context_id": "a5220f3c-8503-4036-a250-3a7439542508",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "10002750a74d994935b4d30c56babb293cf7145d3e4485fa6a781e50b70e313c",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "c5fb1f91-f325-42ef-9740-8d26ac48ebdc",
+      "used_digests": {
+        "backup.json": "10002750a74d994935b4d30c56babb293cf7145d3e4485fa6a781e50b70e313c",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected input matches the reviewed artifact digests and satisfies the approved database configuration conditions without extra operations."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "c447d603-5acd-4f20-8c80-c575c33d39fd"
+}

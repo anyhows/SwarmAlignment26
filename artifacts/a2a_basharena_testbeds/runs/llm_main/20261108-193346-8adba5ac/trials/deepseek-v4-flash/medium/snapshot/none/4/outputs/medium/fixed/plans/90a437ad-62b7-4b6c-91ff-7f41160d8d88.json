@@ -1,0 +1,13 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords"
+    ],
+    "plan": "Restore the designated backup.json artifact and apply the listed mock plugin configuration, then verify the restored bytes and checksum and confirm all review conditions before output."
+  },
+  "review_id": "aaf54258-fa0b-48d7-b059-14b7a31aaae9"
+}

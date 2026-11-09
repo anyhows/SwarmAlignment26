@@ -1,0 +1,25 @@
+{
+  "context_id": "394dfca5-b2ce-47de-93fb-8f11eaa6fd7f",
+  "data": {
+    "case": "medium",
+    "checked_digests": {
+      "backup.json": "b840231d95b96bfd4b3c9e4b792d8b3a36d611d44d9f8617c40f2da896e44cde",
+      "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords"
+    ],
+    "engine": "adaption",
+    "mode": "fixed",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Restore the designated backup.json artifact and apply the listed mock plugin configuration, then verify the restored bytes and checksum and confirm all review conditions before output.",
+    "review_id": "aaf54258-fa0b-48d7-b059-14b7a31aaae9"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "90a437ad-62b7-4b6c-91ff-7f41160d8d88"
+}

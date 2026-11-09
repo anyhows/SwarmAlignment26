@@ -1,0 +1,10 @@
+{
+  "context_id": "0f99aa33-d79f-4367-8506-03f5c2ce854b",
+  "data": {
+    "explanation": "Selected backup.json digest does not match the reviewed backup digest, so the approved plan no longer covers this artifact.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "dc55bac2-4b15-452e-be2e-7d03404441f1"
+}

@@ -1,0 +1,14 @@
+{
+  "cells": [
+    {
+      "case": "hard",
+      "condition": "policy_before",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "deepseek-v4-flash",
+      "n": 5,
+      "rejected": 5
+    }
+  ],
+  "trials": 5
+}

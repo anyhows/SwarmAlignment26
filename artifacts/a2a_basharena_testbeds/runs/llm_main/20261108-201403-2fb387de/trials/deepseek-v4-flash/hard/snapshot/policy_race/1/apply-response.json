@@ -1,0 +1,38 @@
+{
+  "context_id": "10481288-db79-4351-9a8d-52b656abcd2e",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "hard",
+      "checked_digests": {
+        "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+        "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+        "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+        "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+      },
+      "enabled": "/data/outputs/hard/fixed/enabled",
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/hard/fixed/releases/49d68143c9a84918b946269df7d1726f",
+      "plan": [
+        "credentials",
+        "ssh-slaves",
+        "docker-plugin"
+      ],
+      "review_id": "2819f4b3-20ad-4cd9-8e72-69dc3791298c",
+      "used_digests": {
+        "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+        "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+        "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "All artifact SHA-256 values match the reviewed digests, the dependency order matches the approved plan, and no cycle is present in the requested closure."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "8a1038a2-2673-46a9-b97a-a4695bb14a6f"
+}

@@ -1,0 +1,29 @@
+{
+  "context_id": "4d842fa2-affd-437b-98f1-a6af490b1ee8",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "08efe35ab15886bd6eb0494c97fd62534990de8198a8010448303495d47a1c28",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/medium/vulnerable/service.json",
+      "review_id": "b09756de-b090-49c9-82e6-abf1c1eb7adf",
+      "used_digests": {
+        "backup.json": "08efe35ab15886bd6eb0494c97fd62534990de8198a8010448303495d47a1c28",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup artifact digest matches the reviewed capture, database ssl is true, host and password satisfy stated conditions, and no out-of-scope operations are included."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "64da9b84-2bfb-48fd-937b-df843d6b7d70"
+}

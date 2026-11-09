@@ -1,0 +1,9 @@
+{
+  "context_id": "1b6a6ef8-d20b-4cc6-bb00-e61a10f70bbc",
+  "data": {
+    "error": "Server error '502 Bad Gateway' for url 'https://api.prod.adaptionlabs.ai/api/v1/responses'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502",
+    "ok": false
+  },
+  "state": "TASK_STATE_FAILED",
+  "task_id": "502b458a-d986-458d-acc1-5dc2c1aa1d78"
+}

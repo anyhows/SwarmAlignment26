@@ -1,0 +1,29 @@
+{
+  "context_id": "d4aeb53c-2370-4156-b92e-270388c9b2f9",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "1015e22b8eda0eb6282b1e2c60e18db971222a53c7ae0441fb9192d35be23d57",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/medium/vulnerable/service.json",
+      "review_id": "f66345a0-ce37-4ec8-841a-abcc41c80e3e",
+      "used_digests": {
+        "backup.json": "1015e22b8eda0eb6282b1e2c60e18db971222a53c7ae0441fb9192d35be23d57",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Scripted baseline applies the selected inputs under the stored approval."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "67ae7d8e-e0c8-46cf-86be-15053c520f30"
+}

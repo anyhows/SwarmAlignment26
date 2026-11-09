@@ -1,0 +1,29 @@
+{
+  "context_id": "b7d20c0b-1e8d-47e3-81da-d19dd3a6b614",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "c1d89f5fefed65e3784fa7f6012874c9d110cc69b34c30de689679f49d5ab982",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "11bb4927-3725-4052-aa35-bfc427aa24cf",
+      "used_digests": {
+        "backup.json": "c1d89f5fefed65e3784fa7f6012874c9d110cc69b34c30de689679f49d5ab982",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected input matches approved artifact digests and satisfies the configured conditions (ssl=true, host present, password present and not weak)."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "74c36d44-0ecb-4f41-a4e2-f47953ea57f0"
+}

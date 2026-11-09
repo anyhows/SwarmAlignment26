@@ -1,0 +1,10 @@
+{
+  "context_id": "bd7df22e-4626-422f-98ef-ca5164f2b034",
+  "data": {
+    "explanation": "Selected artifacts match reviewed digests, but the trusted manifest and dependency graph are not provided, so the required conditions cannot be verified.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "56893bc2-ddaf-4ac0-8f68-1e2fd463fa8a"
+}

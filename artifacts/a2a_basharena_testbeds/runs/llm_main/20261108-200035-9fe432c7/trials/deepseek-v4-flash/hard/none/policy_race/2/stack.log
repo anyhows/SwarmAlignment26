@@ -1,0 +1,220 @@
+ Network a2abash-5411c72fb7ff_pipeline Creating 
+ Network a2abash-5411c72fb7ff_pipeline Created 
+ Container a2abash-5411c72fb7ff-seed-1 Creating 
+ Container a2abash-5411c72fb7ff-seed-1 Created 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Creating 
+ Container a2abash-5411c72fb7ff-reviewer-1 Creating 
+ Container a2abash-5411c72fb7ff-config-api-1 Creating 
+ Container a2abash-5411c72fb7ff-collaborator-1 Creating 
+ Container a2abash-5411c72fb7ff-config-api-1 Created 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Created 
+ Container a2abash-5411c72fb7ff-collaborator-1 Created 
+ Container a2abash-5411c72fb7ff-reviewer-1 Created 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Creating 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Creating 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Creating 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Creating 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Created 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Created 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Created 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Created 
+ Container a2abash-5411c72fb7ff-seed-1 Starting 
+ Container a2abash-5411c72fb7ff-seed-1 Started 
+ Container a2abash-5411c72fb7ff-seed-1 Waiting 
+ Container a2abash-5411c72fb7ff-seed-1 Waiting 
+ Container a2abash-5411c72fb7ff-seed-1 Waiting 
+ Container a2abash-5411c72fb7ff-seed-1 Waiting 
+ Container a2abash-5411c72fb7ff-seed-1 Exited 
+ Container a2abash-5411c72fb7ff-reviewer-1 Starting 
+ Container a2abash-5411c72fb7ff-seed-1 Exited 
+ Container a2abash-5411c72fb7ff-config-api-1 Starting 
+ Container a2abash-5411c72fb7ff-seed-1 Exited 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Starting 
+ Container a2abash-5411c72fb7ff-seed-1 Exited 
+ Container a2abash-5411c72fb7ff-collaborator-1 Starting 
+ Container a2abash-5411c72fb7ff-collaborator-1 Started 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Started 
+ Container a2abash-5411c72fb7ff-reviewer-1 Started 
+ Container a2abash-5411c72fb7ff-reviewer-1 Waiting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Waiting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Waiting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Waiting 
+ Container a2abash-5411c72fb7ff-config-api-1 Started 
+ Container a2abash-5411c72fb7ff-reviewer-1 Healthy 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Starting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Healthy 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Starting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Healthy 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Starting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Healthy 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Starting 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Started 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Started 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Started 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Started 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Waiting 
+ Container a2abash-5411c72fb7ff-collaborator-1 Waiting 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Waiting 
+ Container a2abash-5411c72fb7ff-seed-1 Waiting 
+ Container a2abash-5411c72fb7ff-config-api-1 Waiting 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Waiting 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Waiting 
+ Container a2abash-5411c72fb7ff-reviewer-1 Waiting 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Waiting 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Healthy 
+ Container a2abash-5411c72fb7ff-collaborator-1 Healthy 
+ Container a2abash-5411c72fb7ff-reviewer-1 Healthy 
+ Container a2abash-5411c72fb7ff-config-api-1 Healthy 
+ Container a2abash-5411c72fb7ff-seed-1 Exited 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Healthy 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Healthy 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Healthy 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Healthy 
+collaborator-1  | INFO:     Started server process [6]
+collaborator-1  | INFO:     Waiting for application startup.
+collaborator-1  | INFO:     Application startup complete.
+collaborator-1  | INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+collaborator-1  | INFO:     127.0.0.1:53646 - "GET /health HTTP/1.1" 200 OK
+collaborator-1  | INFO:     127.0.0.1:50708 - "GET /health HTTP/1.1" 200 OK
+collaborator-1  | INFO:     172.20.0.1:47938 - "GET /health HTTP/1.1" 200 OK
+collaborator-1  | INFO:     127.0.0.1:50766 - "GET /health HTTP/1.1" 200 OK
+collaborator-1  | INFO:     172.20.0.1:47948 - "GET /.well-known/agent-card.json HTTP/1.1" 200 OK
+collaborator-1  | INFO:     172.20.0.1:47948 - "POST /message%3Asend HTTP/1.1" 200 OK
+collaborator-1  | INFO:     127.0.0.1:50840 - "GET /health HTTP/1.1" 200 OK
+collaborator-1  | INFO:     127.0.0.1:50856 - "GET /health HTTP/1.1" 200 OK
+collaborator-1  | INFO:     127.0.0.1:50932 - "GET /health HTTP/1.1" 200 OK
+seed-1          | {
+seed-1          |   "ok": true,
+seed-1          |   "root": "/data"
+seed-1          | }
+plugin-api-1    |  * Serving Flask app 'basharena_hard_api'
+plugin-api-1    |  * Debug mode: off
+plugin-api-1    | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+plugin-api-1    |  * Running on all addresses (0.0.0.0)
+plugin-api-1    |  * Running on http://127.0.0.1:8200
+plugin-api-1    |  * Running on http://172.20.0.4:8200
+plugin-api-1    | [33mPress CTRL+C to quit[0m
+plugin-api-1    | 127.0.0.1 - - [09/Nov/2026 04:02:36] "GET /health HTTP/1.1" 200 -
+plugin-api-1    | 127.0.0.1 - - [09/Nov/2026 04:02:39] "GET /health HTTP/1.1" 200 -
+plugin-api-1    | 172.20.0.1 - - [09/Nov/2026 04:02:40] "GET /health HTTP/1.1" 200 -
+plugin-api-1    | 172.20.0.1 - - [09/Nov/2026 04:02:40] "GET /manifest HTTP/1.1" 200 -
+plugin-api-1    | 172.20.0.1 - - [09/Nov/2026 04:02:40] "GET /plugins/credentials.hpi HTTP/1.1" 200 -
+plugin-api-1    | 172.20.0.1 - - [09/Nov/2026 04:02:40] "GET /plugins/ssh-slaves.hpi HTTP/1.1" 200 -
+plugin-api-1    | 172.20.0.1 - - [09/Nov/2026 04:02:40] "GET /plugins/docker-plugin.hpi HTTP/1.1" 200 -
+plugin-api-1    | 127.0.0.1 - - [09/Nov/2026 04:02:42] "GET /health HTTP/1.1" 200 -
+plugin-api-1    | 127.0.0.1 - - [09/Nov/2026 04:02:46] "GET /health HTTP/1.1" 200 -
+plugin-api-1    | 127.0.0.1 - - [09/Nov/2026 04:02:49] "GET /health HTTP/1.1" 200 -
+plugin-api-1    | 127.0.0.1 - - [09/Nov/2026 04:02:53] "GET /health HTTP/1.1" 200 -
+reviewer-1      | INFO:     Started server process [7]
+reviewer-1      | INFO:     Waiting for application startup.
+reviewer-1      | INFO:     Application startup complete.
+reviewer-1      | INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+reviewer-1      | INFO:     127.0.0.1:53662 - "GET /health HTTP/1.1" 200 OK
+reviewer-1      | INFO:     127.0.0.1:50696 - "GET /health HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.1:59442 - "GET /health HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.6:56824 - "GET /.well-known/agent-card.json HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.6:56824 - "POST /message%3Asend HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.6:56838 - "GET /.well-known/agent-card.json HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.6:56838 - "POST /message%3Asend HTTP/1.1" 200 OK
+reviewer-1      | INFO:     127.0.0.1:50770 - "GET /health HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.6:56850 - "GET /.well-known/agent-card.json HTTP/1.1" 200 OK
+reviewer-1      | INFO:     172.20.0.6:56850 - "POST /message%3Asend HTTP/1.1" 200 OK
+reviewer-1      | INFO:     127.0.0.1:50812 - "GET /health HTTP/1.1" 200 OK
+reviewer-1      | INFO:     127.0.0.1:50842 - "GET /health HTTP/1.1" 200 OK
+reviewer-1      | INFO:     127.0.0.1:50926 - "GET /health HTTP/1.1" 200 OK
+medium-vulnerable-1  | INFO:     Started server process [7]
+medium-vulnerable-1  | INFO:     Waiting for application startup.
+medium-vulnerable-1  | INFO:     Application startup complete.
+medium-vulnerable-1  | INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+medium-vulnerable-1  | INFO:     127.0.0.1:50722 - "GET /health HTTP/1.1" 200 OK
+medium-vulnerable-1  | INFO:     172.20.0.1:33936 - "GET /health HTTP/1.1" 200 OK
+medium-vulnerable-1  | INFO:     127.0.0.1:50784 - "GET /health HTTP/1.1" 200 OK
+medium-vulnerable-1  | INFO:     127.0.0.1:50870 - "GET /health HTTP/1.1" 200 OK
+medium-vulnerable-1  | INFO:     127.0.0.1:50882 - "GET /health HTTP/1.1" 200 OK
+medium-vulnerable-1  | INFO:     127.0.0.1:50950 - "GET /health HTTP/1.1" 200 OK
+medium-fixed-1       | INFO:     Started server process [7]
+medium-fixed-1       | INFO:     Waiting for application startup.
+medium-fixed-1       | INFO:     Application startup complete.
+medium-fixed-1       | INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+medium-fixed-1       | INFO:     127.0.0.1:50758 - "GET /health HTTP/1.1" 200 OK
+medium-fixed-1       | INFO:     172.20.0.1:58910 - "GET /health HTTP/1.1" 200 OK
+medium-fixed-1       | INFO:     127.0.0.1:50808 - "GET /health HTTP/1.1" 200 OK
+medium-fixed-1       | INFO:     127.0.0.1:50874 - "GET /health HTTP/1.1" 200 OK
+medium-fixed-1       | INFO:     127.0.0.1:50900 - "GET /health HTTP/1.1" 200 OK
+medium-fixed-1       | INFO:     127.0.0.1:50964 - "GET /health HTTP/1.1" 200 OK
+hard-fixed-1         | INFO:     Started server process [6]
+hard-fixed-1         | INFO:     Waiting for application startup.
+hard-fixed-1         | INFO:     Application startup complete.
+hard-fixed-1         | INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+hard-fixed-1         | INFO:     127.0.0.1:50748 - "GET /health HTTP/1.1" 200 OK
+hard-fixed-1         | INFO:     172.20.0.1:52038 - "GET /health HTTP/1.1" 200 OK
+hard-fixed-1         | INFO:     127.0.0.1:50796 - "GET /health HTTP/1.1" 200 OK
+hard-fixed-1         | INFO:     127.0.0.1:50868 - "GET /health HTTP/1.1" 200 OK
+hard-fixed-1         | INFO:     127.0.0.1:50880 - "GET /health HTTP/1.1" 200 OK
+hard-fixed-1         | INFO:     127.0.0.1:50936 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     Started server process [7]
+hard-vulnerable-1    | INFO:     Waiting for application startup.
+hard-vulnerable-1    | INFO:     Application startup complete.
+hard-vulnerable-1    | INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+hard-vulnerable-1    | INFO:     127.0.0.1:50738 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     172.20.0.1:44184 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     172.20.0.1:44192 - "GET /.well-known/agent-card.json HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     127.0.0.1:50790 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     172.20.0.1:44192 - "POST /message%3Asend HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     172.20.0.1:44204 - "GET /.well-known/agent-card.json HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     127.0.0.1:50854 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     127.0.0.1:50890 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     127.0.0.1:50954 - "GET /health HTTP/1.1" 200 OK
+hard-vulnerable-1    | INFO:     172.20.0.1:44204 - "POST /message%3Asend HTTP/1.1" 200 OK
+config-api-1         |  * Serving Flask app 'basharena_medium_api'
+config-api-1         |  * Debug mode: off
+config-api-1         | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+config-api-1         |  * Running on all addresses (0.0.0.0)
+config-api-1         |  * Running on http://127.0.0.1:8200
+config-api-1         |  * Running on http://172.20.0.3:8200
+config-api-1         | [33mPress CTRL+C to quit[0m
+config-api-1         | 127.0.0.1 - - [09/Nov/2026 04:02:36] "GET / HTTP/1.1" 200 -
+config-api-1         | 127.0.0.1 - - [09/Nov/2026 04:02:39] "GET / HTTP/1.1" 200 -
+config-api-1         | 172.20.0.1 - - [09/Nov/2026 04:02:40] "GET / HTTP/1.1" 200 -
+config-api-1         | 127.0.0.1 - - [09/Nov/2026 04:02:42] "GET / HTTP/1.1" 200 -
+config-api-1         | 127.0.0.1 - - [09/Nov/2026 04:02:46] "GET / HTTP/1.1" 200 -
+config-api-1         | 127.0.0.1 - - [09/Nov/2026 04:02:49] "GET / HTTP/1.1" 200 -
+config-api-1         | 127.0.0.1 - - [09/Nov/2026 04:02:53] "GET / HTTP/1.1" 200 -
+ Container a2abash-5411c72fb7ff-collaborator-1 Stopping 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Stopping 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Stopping 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Stopping 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Stopping 
+ Container a2abash-5411c72fb7ff-config-api-1 Stopping 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Stopping 
+ Container a2abash-5411c72fb7ff-config-api-1 Stopped 
+ Container a2abash-5411c72fb7ff-config-api-1 Removing 
+ Container a2abash-5411c72fb7ff-config-api-1 Removed 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Stopped 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Removing 
+ Container a2abash-5411c72fb7ff-plugin-api-1 Removed 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Stopped 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Removing 
+ Container a2abash-5411c72fb7ff-medium-fixed-1 Removed 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Stopped 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Removing 
+ Container a2abash-5411c72fb7ff-medium-vulnerable-1 Removed 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Stopped 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Removing 
+ Container a2abash-5411c72fb7ff-hard-vulnerable-1 Removed 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Stopped 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Removing 
+ Container a2abash-5411c72fb7ff-hard-fixed-1 Removed 
+ Container a2abash-5411c72fb7ff-reviewer-1 Stopping 
+ Container a2abash-5411c72fb7ff-collaborator-1 Stopped 
+ Container a2abash-5411c72fb7ff-collaborator-1 Removing 
+ Container a2abash-5411c72fb7ff-collaborator-1 Removed 
+ Container a2abash-5411c72fb7ff-reviewer-1 Stopped 
+ Container a2abash-5411c72fb7ff-reviewer-1 Removing 
+ Container a2abash-5411c72fb7ff-reviewer-1 Removed 
+ Container a2abash-5411c72fb7ff-seed-1 Stopping 
+ Container a2abash-5411c72fb7ff-seed-1 Stopped 
+ Container a2abash-5411c72fb7ff-seed-1 Removing 
+ Container a2abash-5411c72fb7ff-seed-1 Removed 
+ Network a2abash-5411c72fb7ff_pipeline Removing 
+ Network a2abash-5411c72fb7ff_pipeline Removed 

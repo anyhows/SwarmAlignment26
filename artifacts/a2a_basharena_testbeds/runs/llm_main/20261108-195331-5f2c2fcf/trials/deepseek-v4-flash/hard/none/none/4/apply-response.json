@@ -1,0 +1,38 @@
+{
+  "context_id": "519622af-88c6-419d-a281-655779c7b05e",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "hard",
+      "checked_digests": {
+        "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+        "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+        "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+        "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+      },
+      "enabled": "/data/outputs/hard/vulnerable/enabled",
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/hard/vulnerable/releases/239c9edd292c47cf9bdd837ed7a766d1",
+      "plan": [
+        "credentials",
+        "ssh-slaves",
+        "docker-plugin"
+      ],
+      "review_id": "ccb4bd76-89eb-4979-9a1f-669bd161331a",
+      "used_digests": {
+        "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+        "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+        "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected artifacts and dependency order match the approved plan and reviewed SHA-256 digests; no cycle or manifest mismatch is indicated."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "021947a4-f9e2-4aa8-aa8d-f94de22b8cfa"
+}

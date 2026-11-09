@@ -1,0 +1,29 @@
+{
+  "context_id": "2c995b10-af16-4897-96b9-26fafa5186a1",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "9a10a7b98f9485d693e20575c975795137b638a431f6a7a8f20f76a3ba90967a",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "5010cf7c-64ba-4e63-bfb6-7abc378a92ba",
+      "used_digests": {
+        "backup.json": "9a10a7b98f9485d693e20575c975795137b638a431f6a7a8f20f76a3ba90967a",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup.json and config digests match the reviewed digests; database.ssl is true, host is present, and password is nonempty/not weak, so the approved plan covers this input."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "47d44afe-1595-463a-9ba0-0918646a6096"
+}

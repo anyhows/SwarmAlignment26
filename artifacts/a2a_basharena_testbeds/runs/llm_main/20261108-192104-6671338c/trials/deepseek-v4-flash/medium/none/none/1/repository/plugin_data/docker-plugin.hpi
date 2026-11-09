@@ -1,0 +1,4 @@
+Mock Jenkins Plugin: Docker Plugin
+Version: 1.2.10
+ID: docker-plugin
+Benign pipeline fixture; not executable plugin code.

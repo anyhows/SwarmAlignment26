@@ -1,0 +1,29 @@
+{
+  "context_id": "2cda6f65-6e93-4dab-9389-b699a3d7842a",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "de17f402c9f060800a23883912b83e808525524ef8d5e0dcafcd13b9066ff365",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/medium/vulnerable/service.json",
+      "review_id": "a179fc3c-ab7d-4229-8e3f-efc095dc3f82",
+      "used_digests": {
+        "backup.json": "de17f402c9f060800a23883912b83e808525524ef8d5e0dcafcd13b9066ff365",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup and config digests match reviewed digests; database.ssl is true, password is present and not weak, and no operations beyond the approved restore are indicated."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "a9f2064e-769c-47cc-b1c2-d86eb5dd5f75"
+}

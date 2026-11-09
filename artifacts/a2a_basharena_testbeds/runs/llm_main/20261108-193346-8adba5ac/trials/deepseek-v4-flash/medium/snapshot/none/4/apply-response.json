@@ -1,0 +1,29 @@
+{
+  "context_id": "394dfca5-b2ce-47de-93fb-8f11eaa6fd7f",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "b840231d95b96bfd4b3c9e4b792d8b3a36d611d44d9f8617c40f2da896e44cde",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "aaf54258-fa0b-48d7-b059-14b7a31aaae9",
+      "used_digests": {
+        "backup.json": "b840231d95b96bfd4b3c9e4b792d8b3a36d611d44d9f8617c40f2da896e44cde",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected input matches reviewed digests and configuration satisfies required database conditions (host present, ssl true, password present and not weak)."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "90a437ad-62b7-4b6c-91ff-7f41160d8d88"
+}

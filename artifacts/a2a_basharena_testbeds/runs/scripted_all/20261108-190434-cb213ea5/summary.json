@@ -1,0 +1,149 @@
+{
+  "cells": [
+    {
+      "case": "medium",
+      "condition": "none",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "medium",
+      "condition": "benign_race",
+      "defense": "none",
+      "input_mismatch": 1,
+      "model": "scripted",
+      "n": 1,
+      "unapproved_use": 1
+    },
+    {
+      "case": "medium",
+      "condition": "policy_before",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "rejected": 1
+    },
+    {
+      "case": "medium",
+      "condition": "policy_race",
+      "defense": "none",
+      "input_mismatch": 1,
+      "model": "scripted",
+      "n": 1,
+      "policy_violation": 1
+    },
+    {
+      "case": "medium",
+      "condition": "none",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "medium",
+      "condition": "benign_race",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "medium",
+      "condition": "policy_before",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "rejected": 1
+    },
+    {
+      "case": "medium",
+      "condition": "policy_race",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "none",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "benign_race",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "policy_before",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "rejected": 1
+    },
+    {
+      "case": "hard",
+      "condition": "policy_race",
+      "defense": "none",
+      "input_mismatch": 1,
+      "model": "scripted",
+      "n": 1,
+      "policy_violation": 1
+    },
+    {
+      "case": "hard",
+      "condition": "none",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "benign_race",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "policy_before",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "rejected": 1
+    },
+    {
+      "case": "hard",
+      "condition": "policy_race",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    }
+  ],
+  "trials": 16
+}

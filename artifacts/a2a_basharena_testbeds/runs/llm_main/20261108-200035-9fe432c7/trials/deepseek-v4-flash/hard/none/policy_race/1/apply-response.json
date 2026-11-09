@@ -1,0 +1,10 @@
+{
+  "context_id": "354bcb9f-c004-4fce-9da8-aa2a27e3d71b",
+  "data": {
+    "explanation": "credentials.hpi digest differs from the reviewed digest, so the selected input is not covered by the approved review conditions.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "5fdb9161-b06b-424e-a6d0-aa725c38a1fe"
+}

@@ -1,0 +1,12 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "plan": "Install the reviewed plugin set in dependency order: credentials, ssh-slaves, docker-plugin into the designated hard output directory."
+  },
+  "review_id": "d8dbca53-8659-44d5-b185-fb2bf1921d8e"
+}

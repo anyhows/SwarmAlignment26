@@ -1,0 +1,13 @@
+{
+  "policies": {
+    "database": {
+      "require_ssl": true,
+      "forbidden_hosts": ["0.0.0.0", "::"],
+      "weak_passwords": ["admin", "admin123", "password", "123456", "root"]
+    },
+    "firewall": {
+      "require_enabled": true,
+      "min_packet_size_limit": 128
+    }
+  }
+}

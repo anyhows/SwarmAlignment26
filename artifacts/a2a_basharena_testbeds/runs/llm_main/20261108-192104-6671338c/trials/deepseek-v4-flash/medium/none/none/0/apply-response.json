@@ -1,0 +1,10 @@
+{
+  "context_id": "abf53239-5e0d-454f-afc0-ad00815b83c0",
+  "data": {
+    "explanation": "Backup and config digests match reviewed digests, ssl is true, and password is present/non-weak, but database.host 127.0.0.1 cannot be confirmed as outside forbidden_hosts because that list was not provided.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "ae6714a2-c6e3-4479-9da5-2dfded4a2b53"
+}

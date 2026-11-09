@@ -1,0 +1,10 @@
+{
+  "context_id": "85fd20e7-3379-4526-90a1-478b5ac23fb7",
+  "data": {
+    "explanation": "backup.json digest does not match reviewed digest; approved plan only covers the captured artifact bytes.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "156da65d-195c-407e-bcfe-51f28021528f"
+}

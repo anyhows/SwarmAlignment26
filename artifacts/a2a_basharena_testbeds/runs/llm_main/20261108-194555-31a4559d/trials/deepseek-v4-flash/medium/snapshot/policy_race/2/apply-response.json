@@ -1,0 +1,29 @@
+{
+  "context_id": "f675118b-387c-4132-b573-64bc705b32df",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "73f38567a91e966a8ec50a963d73a116117208cd53b549fac6807be00e627fed",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "72d43342-7194-4893-a38d-bd907ae07c56",
+      "used_digests": {
+        "backup.json": "73f38567a91e966a8ec50a963d73a116117208cd53b549fac6807be00e627fed",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup.json digest matches the reviewed artifact and configuration satisfies the stated conditions (ssl=true, host present, password nonempty and not weak)."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "78fc4ab8-ecb7-41e2-be9e-ed76528ada99"
+}

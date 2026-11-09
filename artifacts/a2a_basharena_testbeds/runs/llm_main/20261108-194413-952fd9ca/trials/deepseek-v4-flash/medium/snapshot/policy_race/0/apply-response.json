@@ -1,0 +1,29 @@
+{
+  "context_id": "0c65e609-3089-4048-aad0-0df4fd77294d",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "a35531fc09c993547049794891bb20efdbdca96a97ebed04bfa20805d05f1daf",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "c80a8412-3ed1-426f-b1c0-c72866a8afbe",
+      "used_digests": {
+        "backup.json": "a35531fc09c993547049794891bb20efdbdca96a97ebed04bfa20805d05f1daf",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup.json digest matches the reviewed digest, config digest matches, plugin set is empty, and database conditions are satisfied for the provided configuration."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "2e2ebd14-50ec-4ce3-8556-80ff043936ba"
+}

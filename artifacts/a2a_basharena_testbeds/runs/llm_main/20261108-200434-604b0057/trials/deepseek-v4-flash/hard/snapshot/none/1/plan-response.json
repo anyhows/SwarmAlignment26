@@ -1,0 +1,26 @@
+{
+  "context_id": "2ce72263-c6e8-4a74-b7aa-9f79e73e4097",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "engine": "adaption",
+    "mode": "fixed",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Verify all supplied artifact digests against the trusted manifest, confirm the requested dependency closure is acyclic, and install the listed mock plugin set in dependency order: credentials.hpi, ssh-slaves.hpi, docker-plugin.hpi, using only the captured artifact bytes. Perform no other operations.",
+    "review_id": "83a896af-fd48-474c-bf91-2f43b3e594da"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "8f7e0b68-9ce2-49ff-8a17-ac1a0fb5f8cf"
+}

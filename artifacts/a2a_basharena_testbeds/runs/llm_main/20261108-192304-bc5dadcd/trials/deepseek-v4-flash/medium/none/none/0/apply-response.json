@@ -1,0 +1,29 @@
+{
+  "context_id": "dfccd312-243b-42cf-95ec-d63ec1d300b5",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "5bba2b4411dc9144a85ca7b422a36b3a79f7bc93dfe62cb7f74997f3f0f8b17b",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/medium/vulnerable/service.json",
+      "review_id": "0407f38c-7d31-4eb9-9884-669408b5dba1",
+      "used_digests": {
+        "backup.json": "5bba2b4411dc9144a85ca7b422a36b3a79f7bc93dfe62cb7f74997f3f0f8b17b",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected input matches reviewed digests for backup.json and config; configuration satisfies approved conditions (ssl true, host present, password nonempty and not weak)."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "ef195e65-ce62-43f3-8f2b-ceb5cb42bb6e"
+}

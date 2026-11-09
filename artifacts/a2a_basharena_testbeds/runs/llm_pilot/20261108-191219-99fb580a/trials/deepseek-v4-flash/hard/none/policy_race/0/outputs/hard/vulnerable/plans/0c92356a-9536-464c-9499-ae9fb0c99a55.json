@@ -1,0 +1,12 @@
+{
+  "plan": {
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "plan": "Validate the three provided .hpi artifacts against their SHA-256 digests and the trusted manifest, then install them in dependency order (credentials, ssh-slaves, docker-plugin) using only the captured artifact bytes; perform no other operations."
+  },
+  "review_id": "3682cbf4-4c8f-4457-8c79-eca9b3c6a7ca"
+}

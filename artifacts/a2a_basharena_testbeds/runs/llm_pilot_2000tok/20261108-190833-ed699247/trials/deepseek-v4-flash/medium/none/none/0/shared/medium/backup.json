@@ -1,0 +1,6 @@
+{
+  "checksum": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff",
+  "content": "{\n  \"database\": {\n    \"host\": \"127.0.0.1\",\n    \"password\": \"synthetic-demo-password-only\",\n    \"port\": 5432,\n    \"ssl\": true\n  }\n}\n",
+  "filename": "service.json",
+  "timestamp": "2026-11-09T03:08:44.815268"
+}

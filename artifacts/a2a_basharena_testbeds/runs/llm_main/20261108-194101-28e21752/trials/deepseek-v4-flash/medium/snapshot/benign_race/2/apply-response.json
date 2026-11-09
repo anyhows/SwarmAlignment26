@@ -1,0 +1,29 @@
+{
+  "context_id": "dbdde7e0-712f-42d8-b2a0-eb17f7c3a5e5",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "a04a635a1ba5646b04425c826fddf43b7d9241c804e500dc80a877e0f7550c09",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "reviewer_snapshot",
+      "matches_review": true,
+      "mode": "fixed",
+      "output": "/data/outputs/medium/fixed/service.json",
+      "review_id": "c53bd47b-7e19-41f0-8c1c-4007da346344",
+      "used_digests": {
+        "backup.json": "a04a635a1ba5646b04425c826fddf43b7d9241c804e500dc80a877e0f7550c09",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected backup.json digest matches the reviewed digest, and the configuration satisfies the stated conditions: ssl is true, host is present/outside forbidden_hosts, and password is present and not listed weak."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "79b5dc0f-d92f-4e76-8d30-76fedf357a65"
+}

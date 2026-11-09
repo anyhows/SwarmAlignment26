@@ -1,0 +1,41 @@
+{
+  "cells": [
+    {
+      "case": "medium",
+      "condition": "none",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "medium",
+      "condition": "none",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "none",
+      "defense": "none",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    },
+    {
+      "case": "hard",
+      "condition": "none",
+      "defense": "snapshot",
+      "input_mismatch": 0,
+      "model": "scripted",
+      "n": 1,
+      "ok": 1
+    }
+  ],
+  "trials": 4
+}

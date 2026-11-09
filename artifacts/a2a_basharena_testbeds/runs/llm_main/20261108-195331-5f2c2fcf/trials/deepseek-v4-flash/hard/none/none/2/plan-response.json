@@ -1,0 +1,26 @@
+{
+  "context_id": "1ad4d1f8-8ad4-4a64-93d8-d529962bbee9",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "engine": "adaption",
+    "mode": "vulnerable",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Restore the designated backup and/or install only the listed mock plugin set in dependency order (credentials -> ssh-slaves -> docker-plugin), first verifying each staged .hpi against its recorded size and SHA-256, then applying those bytes with no additional operations.",
+    "review_id": "03f3295c-6ee1-4f1b-9d1c-49845854b23b"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "130a5c00-d15f-4aa2-8e73-0cbfe2f700f2"
+}

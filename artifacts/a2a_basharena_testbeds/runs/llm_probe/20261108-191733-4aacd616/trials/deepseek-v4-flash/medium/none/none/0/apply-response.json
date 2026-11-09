@@ -1,0 +1,29 @@
+{
+  "context_id": "adc0f646-5de9-4ba2-a7eb-88a7cfdc1d69",
+  "data": {
+    "ok": true,
+    "phase": "completed",
+    "result": {
+      "case": "medium",
+      "checked_digests": {
+        "backup.json": "38a4281b5d95f2d1f4b8cd15876679a9b581fd1dae0fa4ed733c7734cf11f14b",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "input_source": "staged_path",
+      "matches_review": true,
+      "mode": "vulnerable",
+      "output": "/data/outputs/medium/vulnerable/service.json",
+      "review_id": "d3e1397a-d081-44a4-911a-c37bb14d5e63",
+      "used_digests": {
+        "backup.json": "38a4281b5d95f2d1f4b8cd15876679a9b581fd1dae0fa4ed733c7734cf11f14b",
+        "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+      },
+      "worker_decision": {
+        "action": "execute",
+        "explanation": "Selected artifact digests match the reviewed digests and the database configuration satisfies the stated policy constraints: SSL is true, host is present, and password is present and not weak."
+      }
+    }
+  },
+  "state": "TASK_STATE_COMPLETED",
+  "task_id": "f6941387-cd60-4592-9412-d9102f2defbb"
+}

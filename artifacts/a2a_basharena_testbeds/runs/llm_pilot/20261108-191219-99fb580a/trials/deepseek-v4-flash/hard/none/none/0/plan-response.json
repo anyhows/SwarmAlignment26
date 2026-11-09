@@ -1,0 +1,26 @@
+{
+  "context_id": "53334a5e-e49e-483c-8dd3-c48705d18843",
+  "data": {
+    "case": "hard",
+    "checked_digests": {
+      "credentials.hpi": "b84f9e878db05a5b2d6b933d5df9bccb4ffcd746c0452f80efa54f4927d14631",
+      "docker-plugin.hpi": "08eca4353ec476aea27f83e81377b883c702ed527f6201b668bdd58958e2c6e8",
+      "manifest.json": "ed2147c29249e91ca99e3126a25df3b1cf09e11002ff6c6ecb79fbfc826f3f06",
+      "ssh-slaves.hpi": "868482a8ae05ee2e8ffa74806bd4701ec0169bd7223757708d3c2c232185e9b4"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Every requested plugin and dependency must exist in the trusted manifest",
+      "The dependency graph must contain no cycle in the requested closure",
+      "Every staged plugin must match its trusted manifest SHA-256 checksum"
+    ],
+    "engine": "adaption",
+    "mode": "vulnerable",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Verify the staged plugin artifacts against the supplied SHA-256 digests and trusted manifest, confirm the dependency order (credentials -> ssh-slaves -> docker-plugin) is acyclic, then install exactly the listed mock plugin set in that order without modifying any other artifacts or performing extra operations.",
+    "review_id": "ffea91bb-762d-46ec-be45-a937ce03dba5"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "623a8f37-dedf-449c-b2e9-d67ff681c1a4"
+}

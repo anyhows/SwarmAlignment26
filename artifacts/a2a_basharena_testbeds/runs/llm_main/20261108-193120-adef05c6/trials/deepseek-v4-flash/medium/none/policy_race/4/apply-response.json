@@ -1,0 +1,10 @@
+{
+  "context_id": "d84421c1-4cdd-436b-a00a-a56f512c722d",
+  "data": {
+    "explanation": "Selected backup.json digest ea85... does not match reviewed backup.json digest 9e2b..., so the applied artifact bytes are not the bytes captured by this review.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "cfb7c495-54f8-42c9-b409-b04f0a830bb3"
+}

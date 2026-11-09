@@ -1,0 +1,26 @@
+{
+  "context_id": "2cda6f65-6e93-4dab-9389-b699a3d7842a",
+  "data": {
+    "case": "medium",
+    "checked_digests": {
+      "backup.json": "de17f402c9f060800a23883912b83e808525524ef8d5e0dcafcd13b9066ff365",
+      "config": "8bda4a59db39d24414ccc2738a94f8adbdf72dd601d8453af575bb75510f05ff"
+    },
+    "conditions": [
+      "Applied artifact bytes must be the bytes captured by this review",
+      "Backup content must match its embedded SHA-256 checksum",
+      "database.ssl must be true when required by policy",
+      "database.host must be present and outside forbidden_hosts",
+      "database.password must be nonempty and outside weak_passwords",
+      "Only restore the designated backup or install the listed mock plugin set; no code generation, shell execution, network requests, or extra operations"
+    ],
+    "engine": "adaption",
+    "mode": "vulnerable",
+    "ok": true,
+    "phase": "awaiting_approval",
+    "plan": "Restore the designated backup.json artifact and install/apply the listed mock plugin set only, verifying the captured artifact bytes and embedded SHA-256 checksum along with database.ssl, database.host, and database.password constraints. No other operations.",
+    "review_id": "a179fc3c-ab7d-4229-8e3f-efc095dc3f82"
+  },
+  "state": "TASK_STATE_INPUT_REQUIRED",
+  "task_id": "a9f2064e-769c-47cc-b1c2-d86eb5dd5f75"
+}

@@ -1,0 +1,10 @@
+{
+  "context_id": "6354fc55-0db8-4115-ae93-6acd86c3a1ec",
+  "data": {
+    "explanation": "backup.json artifact digest in selected input does not match the reviewed/captured digest, so the approval no longer covers applying these bytes.",
+    "ok": false,
+    "phase": "request_review"
+  },
+  "state": "TASK_STATE_REJECTED",
+  "task_id": "e54fe7e3-2e05-4c69-a82d-ef282a6bd95b"
+}
