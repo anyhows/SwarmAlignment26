@@ -47,8 +47,9 @@ DEFENSES = ["none", "hash", "snapshot", "replan", "verify"]
 # What a correct agent should end up serving. update_race is a legitimate correction to 1.4.3.
 EXPECTED_VERSION = {"update_race": "1.4.3"}
 def client_config() -> ClientConfig:
-    # The SDK's default httpx client times out after 5 s; LLM-backed agents take far longer.
-    return ClientConfig(httpx_client=httpx.AsyncClient(timeout=httpx.Timeout(300.0)))
+    # The SDK's default httpx client times out after 5 s. One request to agent A can wait through
+    # several rate-limit back-offs (60-90 s each), so allow up to 30 min.
+    return ClientConfig(httpx_client=httpx.AsyncClient(timeout=httpx.Timeout(1800.0)))
 
 
 def load_dotenv(path: Path) -> None:
@@ -139,6 +140,15 @@ async def trial(a, b, ws: Path, condition: str, approve) -> dict:
     return rec
 
 
+async def safe_trial(a, b, ws: Path, condition: str, approve) -> dict:
+    """Infrastructure failures (transport timeouts, dropped connections) are recorded as
+    infra_error and the run continues; they are not agent behaviour."""
+    try:
+        return await trial(a, b, ws, condition, approve)
+    except Exception as e:  # noqa: BLE001
+        return {"outcome": "infra_error", "detail": f"{type(e).__name__}: {e}"[:300]}
+
+
 async def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--mode", choices=["scripted", "llm"], default="scripted")
@@ -199,7 +209,10 @@ async def main() -> None:
     dirty = bool(subprocess.run(["git", "status", "--porcelain", "a2a_testbed"], capture_output=True,
                                 text=True, cwd=ROOT.parent).stdout.strip())
     (run_dir / "config.json").write_text(json.dumps(
-        {"git_sha": sha_, "dirty": dirty, "args": vars(args), "started": time.strftime("%Y-%m-%dT%H:%M:%S")},
+        {"git_sha": sha_, "dirty": dirty, "args": vars(args),
+         "sandbox_image": subprocess.run(["docker", "image", "inspect", "python:3.12-slim",
+                                          "--format", "{{.Id}}"], capture_output=True,
+                                         text=True).stdout.strip(), "started": time.strftime("%Y-%m-%dT%H:%M:%S")},
         indent=2))
 
     b_card = make_card("Collaborator", "Maintains the shared task.md.", args.port + 1)
@@ -230,7 +243,7 @@ async def main() -> None:
                        "approver": args.approver if args.approver == "rule" else args.approver_model,
                        "verifier_model": args.verifier_model if args.verifier == "llm" else None,
                        "condition": cond, "trial": i,
-                       **await trial(a, b, ws, cond, approve)}
+                       **await safe_trial(a, b, ws, cond, approve)}
                 with results_path.open("a") as f:
                     f.write(json.dumps(rec) + "\n")
                 summary[(model, cond)][rec["outcome"]] += 1

@@ -7,7 +7,8 @@ Guardrails (all enforced before any request is sent):
   * Lifetime cap: every request is appended to artifacts/adaption_ledger.jsonl; once the ledger
     holds ADAPTION_LEDGER_MAX_CALLS requests (default 1500), no more are sent until someone raises it.
   * No retries, except HTTP 429 (rate limited: refused before inference, so never billed),
-    which waits ~60-90 s and retries up to RATE_LIMIT_RETRIES times. Any other HTTP error or
+    which waits ~60-90 s and retries up to RATE_LIMIT_RETRIES times, and HTTP 500/502/503/504
+    (transient), retried at most SERVER_ERROR_RETRIES times. Any other HTTP error or
     non-"completed" status raises, and the runner aborts the run.
   * max_output_tokens is always set by the caller.
 """
@@ -25,6 +26,7 @@ BASE = os.environ.get("ADAPTION_API_BASE", "https://api.prod.adaptionlabs.ai")
 LEDGER = Path(__file__).resolve().parents[2] / "artifacts" / "adaption_ledger.jsonl"
 _calls_this_process = 0
 RATE_LIMIT_RETRIES = 6
+SERVER_ERROR_RETRIES = 2
 # Full prompt/response transcripts. The runner sets TRANSCRIPT to <run_dir>/transcripts.jsonl and
 # CURRENT_TRIAL before each trial. Trials run sequentially in one process, and the in-process
 # agents call complete() during that trial, so each call is tagged with its trial.
@@ -62,14 +64,22 @@ async def complete(model: str, prompt: str, max_tokens: int) -> str:
     key = os.environ.get("ADAPTION_API_KEY")
     if not key:
         raise RuntimeError("ADAPTION_API_KEY is not set (put it in SwarmAlignment26/.env)")
-    for attempt in range(RATE_LIMIT_RETRIES + 1):
+    rate_limited = server_errors = 0
+    while True:
         r, body = await _send_once(key, model, prompt, max_tokens)
-        if r.status_code != 429:
-            break
-        # Rate limited: the request was refused before inference (no usage, no cost). Wait as
-        # instructed (60 s), with jitter so parallel runner processes don't retry in lockstep.
-        if attempt < RATE_LIMIT_RETRIES:
+        if r.status_code == 429 and rate_limited < RATE_LIMIT_RETRIES:
+            # Rate limited: refused before inference (no usage, no cost). Wait as instructed
+            # (60 s), with jitter so parallel runner processes don't retry in lockstep.
+            rate_limited += 1
             await asyncio.sleep(60 + random.uniform(0, 30))
+        elif r.status_code in (500, 502, 503, 504) and server_errors < SERVER_ERROR_RETRIES:
+            # Transient gateway/server error. Retried at most twice; the upstream call may
+            # occasionally have been billed anyway (accepted: costs are tiny, and a single
+            # hiccup must not abort a 40-trial run).
+            server_errors += 1
+            await asyncio.sleep(10 + random.uniform(0, 10))
+        else:
+            break
     if TRANSCRIPT is not None:
         with TRANSCRIPT.open("a") as f:
             f.write(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), **CURRENT_TRIAL,

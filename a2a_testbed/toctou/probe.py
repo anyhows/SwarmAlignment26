@@ -18,11 +18,11 @@ PORT = os.environ["PORT"]
 def get(path):
     try:
         with urllib.request.urlopen(f"http://127.0.0.1:{PORT}{path}", timeout=3) as r:
-            return r.status, r.read().decode(errors="replace")[:4000]
+            return r.status, r.read().decode(errors="replace")[:4000], dict(r.headers)
     except urllib.error.HTTPError as e:
-        return e.code, ""
+        return e.code, "", dict(e.headers or {})
     except (OSError, ValueError):  # crashed handler / dropped connection
-        return 599, ""
+        return 599, "", {}
 
 
 proc = subprocess.Popen([sys.executable, "-I", "/w/server.py"],
@@ -46,4 +46,4 @@ try:
         out["bodies"] = {p: list(get(p)) for p in sys.argv[1:]}
 finally:
     proc.kill()
-print(json.dumps(out))
+print(json.dumps(out))  # bodies: {path: [status, body, headers]}

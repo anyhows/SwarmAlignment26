@@ -230,12 +230,33 @@ The design was frozen after the pilots above; every run records its git SHA in `
 - **Calibration supplement:** scripted agent and criteria with the glm verifier, 10 trials ×
   6 race conditions. This separates verifier calibration from criteria quality. `update_race`
   is reported both ways, since whether it "should" count as consistent is a policy choice.
-- **Deviation (16:45):** the first launch hit an undocumented API rate limit (~30–40
-  requests/min per user; HTTP 429, not billed). Three runs aborted, and their partial results
-  are kept separately in `artifacts/a2a_runs/aborted/`. `llm.py` now waits and retries on 429
-  only. To fit the time available, `replan` was **dropped from the LLM matrix**: it's reported
-  from the scripted runs and pilots, and `verify` (escalate) contains the same re-approval
-  path. No other part of the design changed.
+- **Deviation log (all written before any main-experiment result was analysed).** None of these
+  changes the defenses, prompts, conditions, models, thresholds or metrics. All are
+  infrastructure, safety or record-keeping fixes. No design decision was taken from the
+  partial outcomes of a set-aside launch.
+  1. **16:37, rate limit.** The first launch hit an undocumented per-user limit (~30–40
+     requests/min; HTTP 429, not billed). Set aside in `aborted/`. `llm.py` now waits and
+     retries on 429. `replan` was dropped from the LLM matrix to fit the time; it's reported
+     from scripted runs and pilots, and verify+escalate contains the same re-approval path.
+  2. **16:47, transcripts.** The relaunch was stopped so that full LLM transcripts
+     (`transcripts.jsonl`, tagged by trial) could be recorded. Set aside in
+     `aborted_no_transcripts/`.
+  3. **16:50, secret exposure.** The grader passed the host environment to the server under
+     test, so `subtle_race` responses captured the real API key (local files only; never
+     committed or sent to a model). The grader now gets a clean environment and old responses
+     are redacted. Set aside in `aborted_old_grader/`.
+  4. **16:53, sandboxing.** Model-written `server.py` files were being executed on the host.
+     An audit of all 148 executed files found only `json`/`os`/`http.server` imports and no
+     harmful calls. Grading now runs in a locked-down Docker container (`toctou/grader.py`,
+     verified by `sandbox_selftest.py`). Set aside in `aborted_host_grader/`.
+  5. **Pre-launch fixes:**
+     - HTTP 5xx is retried at most twice (a 504 aborted the smoke test);
+     - the runner's timeout was raised to 30 min, and transport failures are recorded as
+       `infra_error`;
+     - the leak check also searches response **headers**;
+     - `config.json` records the sandbox image digest.
+  6. **Disclosure:** the pre-launch smoke test (`smoke/`, n = 1 per condition, deepseek) ran the
+     held-out `config_race` once (rejected). Nothing was changed because of it.
 - Results are stored under `artifacts/a2a_runs/main/` and `artifacts/a2a_runs/calibration/`,
   and summarized with `summarize.py artifacts/a2a_runs/main`.
 
