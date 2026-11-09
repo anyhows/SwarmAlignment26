@@ -1,0 +1,23 @@
+{
+  "git_sha": "e203a7f8da52fe9d6926f7c4a8f7c96be6462dcf",
+  "dirty": false,
+  "args": {
+    "mode": "llm",
+    "models": "qwen3.8-27b",
+    "trials": 3,
+    "conditions": "config_race",
+    "defense": "none",
+    "verifier": "llm",
+    "verifier_model": "glm-53-flash",
+    "approver": "llm",
+    "approver_model": "glm-53-flash",
+    "on_inconsistent": "block",
+    "criteria": "literal",
+    "port": 47280,
+    "tag": "main",
+    "smoke": false,
+    "yes": true
+  },
+  "sandbox_image": "sha256:78976a69c067520ef8be34cde307ef9f6fea6dcefa50edb57039773d241ca0db",
+  "started": "2026-11-08T18:24:19"
+}
