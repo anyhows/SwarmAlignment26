@@ -99,6 +99,10 @@ Defaults and limits:
   by default; `ADAPTION_MAX_OUTPUT_TOKENS` overrides it. The recorded LLM runs
   use 6,000 (as in `a2a_testbed`): at 2,000, deepseek-v4-flash spent the whole
   budget on reasoning in the resume decision and returned `incomplete`.
+- The medium input description now includes the trusted `config` digest that
+  the review records. Without it, the resumed worker could only match that
+  digest by hashing in its head; deepseek-v4-flash then reasoned until the
+  ceiling (2/2 pilot trials, at both 2,000 and 6,000 tokens).
   Incomplete, empty, or invalid structured responses are errors, not successes.
 - Reserved/failed calls count toward limits. Status and provider usage are kept
   in `artifacts/a2a_basharena_testbeds/budget/adaption-budget.sqlite3`.

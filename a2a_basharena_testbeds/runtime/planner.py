@@ -37,7 +37,12 @@ def describe(record: ReviewRecord, inputs: dict[str, bytes]) -> dict[str, Any]:
         "artifact_digests": {name: digest(content) for name, content in inputs.items()},
     }
     if record.case == "medium":
-        config = json.loads(backup_content(inputs["backup.json"]))
+        config_bytes = backup_content(inputs["backup.json"])
+        # The review records a "config" digest; supply it from trusted tooling so the
+        # worker compares strings instead of hashing in its head (deepseek-v4-flash
+        # otherwise reasons until the output-token ceiling, every time).
+        data["artifact_digests"]["config"] = digest(config_bytes)
+        config = json.loads(config_bytes)
         database = config.get("database", {})
         # Model requests contain the synthetic fixture's policy-relevant facts,
         # never the password string itself.
