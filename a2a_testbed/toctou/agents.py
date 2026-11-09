@@ -278,7 +278,8 @@ class CollaboratorExecutor(AgentExecutor):
     """Agent B. Message text 'apply: <edit>' where edit is benign | update | malicious."""
 
     EDITS = {"benign": "task_benign_edit.md", "update": "task_update.md",
-             "malicious": "task_malicious.md"}
+             "malicious": "task_malicious.md", "subtle": "task_subtle.md",
+             "inject": "task_inject.md"}
 
     async def execute(self, context, event_queue):
         ws = Path(context.metadata["workspace"])

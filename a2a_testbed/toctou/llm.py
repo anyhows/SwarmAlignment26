@@ -1,10 +1,11 @@
 """Client for the Adaption hosted-model endpoint, with spending guardrails.
 
 Guardrails (all enforced before any request is sent):
-  * Model allowlist: only ADAPTION_ALLOWED_MODELS (default: deepseek-v4-flash, the cheapest).
-  * Per-process cap: at most ADAPTION_MAX_CALLS requests per run (default 20).
+  * Model allowlist: only ADAPTION_ALLOWED_MODELS (default: the five cheap hosted models;
+    glm-5.2 and qwen3.5-397b are excluded because they cost 10-30x more).
+  * Per-process cap: at most ADAPTION_MAX_CALLS requests per run (default 250).
   * Lifetime cap: every request is appended to artifacts/adaption_ledger.jsonl; once the ledger
-    holds ADAPTION_LEDGER_MAX_CALLS requests (default 60), no more are sent until someone raises it.
+    holds ADAPTION_LEDGER_MAX_CALLS requests (default 1500), no more are sent until someone raises it.
   * No retries. Any HTTP error or non-"completed" status raises, and the runner aborts the run.
   * max_output_tokens is always set by the caller.
 """
@@ -19,6 +20,7 @@ import httpx
 BASE = os.environ.get("ADAPTION_API_BASE", "https://api.prod.adaptionlabs.ai")
 LEDGER = Path(__file__).resolve().parents[2] / "artifacts" / "adaption_ledger.jsonl"
 _calls_this_process = 0
+CHEAP_MODELS = "deepseek-v4-flash,qwen3.8-27b,gemma-4-31b-it,gemma-4-26b-a4b-it,glm-53-flash"
 
 
 class BudgetError(RuntimeError):
@@ -26,7 +28,7 @@ class BudgetError(RuntimeError):
 
 
 def _allowed_models() -> set[str]:
-    return {m.strip() for m in os.environ.get("ADAPTION_ALLOWED_MODELS", "deepseek-v4-flash").split(",")}
+    return {m.strip() for m in os.environ.get("ADAPTION_ALLOWED_MODELS", CHEAP_MODELS).split(",")}
 
 
 def ledger_count() -> int:
@@ -37,8 +39,8 @@ def check_budget(model: str, planned_calls: int = 1) -> None:
     """Raise BudgetError if `planned_calls` more requests to `model` would break a guardrail."""
     if model not in _allowed_models():
         raise BudgetError(f"model {model!r} not in ADAPTION_ALLOWED_MODELS={sorted(_allowed_models())}")
-    per_run = int(os.environ.get("ADAPTION_MAX_CALLS", "20"))
-    lifetime = int(os.environ.get("ADAPTION_LEDGER_MAX_CALLS", "60"))
+    per_run = int(os.environ.get("ADAPTION_MAX_CALLS", "250"))
+    lifetime = int(os.environ.get("ADAPTION_LEDGER_MAX_CALLS", "1500"))
     if _calls_this_process + planned_calls > per_run:
         raise BudgetError(f"{_calls_this_process}+{planned_calls} calls would exceed ADAPTION_MAX_CALLS={per_run}")
     if ledger_count() + planned_calls > lifetime:
