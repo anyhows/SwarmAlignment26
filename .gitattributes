@@ -1,0 +1,3 @@
+# Keep the BashArena testbed byte-identical on every OS: its vendored fixtures are
+# checksum-verified, and Windows CRLF conversion breaks those checksums.
+a2a_basharena_testbeds/** -text
