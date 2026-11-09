@@ -82,7 +82,7 @@ async def llm_verify(model: str, plan: str, criteria: list[str], old_text: str,
         model,
         PROMPT.format(plan=plan, criteria="\n".join(f"- {c}" for c in criteria) or "- (none given)",
                       old=old_text, new=new_text),
-        max_tokens=1500,
+        max_tokens=5000,  # deepseek reasons a lot on legitimate updates (~1000-1500+ tokens)
     )
     m = re.search(r"\{.*\}", reply, re.S)
     try:

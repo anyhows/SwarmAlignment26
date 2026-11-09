@@ -203,8 +203,13 @@ class WorkerExecutor(AgentExecutor):
     async def _verify(self, rec: dict, current: str) -> dict:
         if self.verifier_kind == "scripted":
             return verifier.scripted_verify(rec["text"], current)
-        return await verifier.llm_verify(self.verifier_model, rec["plan"], rec["criteria"],
-                                         rec["text"], current)
+        try:
+            return await verifier.llm_verify(self.verifier_model, rec["plan"], rec["criteria"],
+                                             rec["text"], current)
+        except verifier.llm.BudgetError:
+            raise
+        except Exception as e:  # noqa: BLE001 - a failed verifier is an uncertain verifier
+            return {"consistent": False, "confidence": 0.0, "reason": f"verifier error: {e}"[:300]}
 
     async def _plan(self, task_text: str) -> tuple[str, list[str]]:
         """Return (plan shown to the approver, decision criteria the plan relies on)."""
