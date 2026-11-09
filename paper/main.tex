@@ -79,9 +79,10 @@ agent-specific twists: decisions involve long reasoning and human latency, and t
 justifying conditions are natural language rather than predicates. A2A makes the race easy to
 fall into. The Python SDK resumes an \texttt{INPUT\_REQUIRED} task by calling the agent's
 \texttt{execute()} again from scratch, so a stateless agent naturally re-reads the shared
-workspace after approval, and that re-read is the ``use''. Lotfi et al.\ \cite{a2abreak}
-identify Concurrent Access TOCTOU as an A2A specification-level vulnerability. We characterize
-it in executable workflows and evaluate runtime defenses.
+workspace after approval, and that re-read is the ``use''. Our starting point was A2ABreak
+\cite{a2abreak}, which lists Concurrent Access TOCTOU (its finding~\#6) among eleven
+specification-level A2A vulnerabilities without demonstrating or mitigating it. We
+characterize it in executable workflows and evaluate runtime defenses.
 
 Locking the task, or rejecting any decision whose inputs changed, prevents the race but
 discards legitimate concurrent work: a wording fix or a corrected value should not kill an
@@ -121,11 +122,12 @@ exactly the verified content (Figure~\ref{fig:verification-architecture}).
 \paragraph{A2A security.}
 A2A's in-task authorization (\texttt{AUTH\_REQUIRED}/\texttt{INPUT\_REQUIRED}) leaves the scope
 and validity of an authorization to implementations or
-extensions\footnote{\href{https://a2a-protocol.org/latest/specification/\#76-in-task-authorization}{A2A specification, \S7.6 In-Task Authorization}, accessed November 8, 2026.}.
-A2ASecBench \cite{a2asecbench} covers six attack families across discovery, orchestration and
-execution but not concurrent stale decisions. A2ABreak \cite{a2abreak} analyzes the
-specification with a formal state-machine framework; its Concurrent Access TOCTOU finding (no
-task-state versioning or conditional updates) is the vulnerability we execute and defend.
+extensions\footnote{\href{https://a2a-protocol.org/latest/specification/\#76-in-task-authorization}{A2A specification (latest), \S7.6.4 In-Task Authorization Scope}, accessed November 8, 2026.}.
+A2ASecBench \cite{a2asecbench} benchmarks six concrete attacks spanning all A2A stages, but not
+concurrent stale decisions. A2ABreak \cite{a2abreak} models the
+specification as a state machine and reports eleven vulnerabilities. Its finding~\#6,
+Concurrent Access TOCTOU (spec \S3.1.1, \S4.1), is listed without a worked attack or
+mitigation; it is the vulnerability we execute and defend.
 
 \paragraph{Concurrency control.}
 File-system TOCTOU is mitigated by acting on content or handles rather than names
@@ -133,7 +135,8 @@ File-system TOCTOU is mitigated by acting on content or handles rather than name
 transaction read is unchanged \cite{kung-occ}; our \texttt{hash} defense is OCC applied to an
 approval. CoAgent \cite{coagent} uses LLM judgments of whether conflicting writes invalidate a
 plan and repairs affected operations. Stateful governance \cite{stateful-governance}
-formalizes when state-dependent authorizations must remain valid at effect time.
+defines policy-state serializability: committed effects must be authorized against the policy
+state immediately before they occur.
 
 \paragraph{Decision-level revalidation and injection.}
 Selective revalidation \cite{selective-revalidation} distinguishes version conflicts from
@@ -396,11 +399,11 @@ criteria, a stronger approver, and binding every file a decision depends on.
 \begin{thebibliography}{10}
 
 \bibitem{a2a-spec}
-A2A Project. \emph{Agent2Agent Protocol Specification}, v1.0.0.
+A2A Project. \emph{Agent2Agent (A2A) Protocol Specification}, v1.0.0.
 \url{https://a2a-protocol.org/v1.0.0/specification/}
 
 \bibitem{a2abreak}
-Lotfi, A., Rahman, M. M., Karim, I., \& Bertino, E. (2026). \emph{A2ABreak: Systematic Security Analysis of the A2A Protocol}. ACSAC 2026.
+Lotfi, A., Rahman, M. M., Karim, I., \& Bertino, E. (2026). \emph{A2ABreak: Systematic Security Analysis of the A2A Protocol}. 42nd Annual Computer Security Applications Conference (ACSAC '26). arXiv:2609.10871.
 \url{https://arxiv.org/abs/2609.10871}
 
 \bibitem{a2asecbench}
@@ -420,13 +423,16 @@ Lyu, Y., Ren, Y., Lai, R., \& Liu, W. (2026). \emph{From Version Conflicts to De
 \url{https://arxiv.org/abs/2609.08015}
 
 \bibitem{bishop-toctou}
-Bishop, M., \& Dilger, M. (1996). Checking for race conditions in file accesses. \emph{Computing Systems}, 9(2).
+Bishop, M., \& Dilger, M. (1996). Checking for race conditions in file accesses. \emph{Computing Systems}, 9(2), 131ff.
+\url{https://www.usenix.org/legacy/publications/compsystems/1996/spr_bishop.pdf}
 
 \bibitem{kung-occ}
-Kung, H. T., \& Robinson, J. T. (1981). On optimistic methods for concurrency control. \emph{ACM Transactions on Database Systems}, 6(2).
+Kung, H. T., \& Robinson, J. T. (1981). On optimistic methods for concurrency control. \emph{ACM Transactions on Database Systems}, 6(2), 213--226.
+\url{https://doi.org/10.1145/319566.319567}
 
 \bibitem{greshake-injection}
-Greshake, K., et al. (2023). Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection. \emph{AISec '23}.
+Greshake, K., Abdelnabi, S., Mishra, S., Endres, C., Holz, T., \& Fritz, M. (2023). Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection. \emph{Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security (AISec '23)}, 79--90.
+\url{https://doi.org/10.1145/3605764.3623985}
 
 \bibitem{basharena}
 Redwood Research. \emph{BashArena}. \url{https://github.com/redwoodresearch/basharena_public}

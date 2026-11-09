@@ -23,6 +23,7 @@ PAPER = Path(__file__).resolve().parent
 BUILD = PAPER / "docx_build"
 OUT = PAPER / "main.docx"
 AUTHORS = ["Yash Parikh", "Nikhil Maturi", "Aditya Katre"]
+FIGURES = ["figure1", "figure2"]  # in document order
 AFFILIATION = "Del Norte High School"
 
 
@@ -275,9 +276,12 @@ EXTRA_STYLES = (
 def main(template: Path) -> None:
     BUILD.mkdir(exist_ok=True)
     shutil.copy(template, BUILD / "template.docx")
-    for f in ("figure1", "figure2"):
-        subprocess.run(["pdftoppm", "-png", "-r", "300", "-singlefile",
+    for f in FIGURES:
+        # Vector SVG for Word (sharp at any zoom and in PDF export), 600-dpi PNG fallback.
+        subprocess.run(["pdftoppm", "-png", "-r", "600", "-singlefile",
                         str(PAPER / "figures" / (f + ".pdf")), str(BUILD / f)], check=True)
+        subprocess.run(["pdftocairo", "-svg", str(PAPER / "figures" / (f + ".pdf")),
+                        str(BUILD / (f + ".svg"))], check=True)
 
     doc, abs_doc = preprocess((PAPER / "main.tex").read_text(encoding="utf-8"))
     (BUILD / "body.tex").write_text(doc, encoding="utf-8", newline="\n")
@@ -315,6 +319,25 @@ def main(template: Path) -> None:
     files["word/footnotes.xml"] = fn_xml.replace("</w:footnotes>", note + "</w:footnotes>").encode()
     files[rels_name] = rels.encode()
 
+    # Attach the SVG version of each figure (Office 2016+ svgBlip; PNG stays as fallback).
+    d = files["word/document.xml"].decode()
+    drels = files["word/_rels/document.xml.rels"].decode()
+    blips = re.findall(r'<a:blip r:embed="(\w+)"\s*/>', d)
+    assert len(blips) == len(FIGURES), blips
+    for k, (rid, f) in enumerate(zip(blips, FIGURES), 1):
+        files["word/media/%s.svg" % f] = (BUILD / (f + ".svg")).read_bytes()
+        svg_rid = "rIdSvg%d" % k
+        drels = drels.replace("</Relationships>",
+                              '<Relationship Id="%s" Type="http://schemas.openxmlformats.org/'
+                              'officeDocument/2006/relationships/image" Target="media/%s.svg"/>'
+                              "</Relationships>" % (svg_rid, f))
+        d = re.sub(r'<a:blip r:embed="%s"\s*/>' % rid,
+                   '<a:blip r:embed="%s"><a:extLst><a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}">'
+                   '<asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main" '
+                   'r:embed="%s"/></a:ext></a:extLst></a:blip>' % (rid, svg_rid), d, count=1)
+    files["word/_rels/document.xml.rels"] = drels.encode()
+    files["word/document.xml"] = d.encode()
+
     # Splice the template's front matter before the converted body.
     d = files["word/document.xml"].decode()
     fm = front_matter(tpl.read("word/document.xml").decode(), title, abstract, fid)
@@ -327,7 +350,8 @@ def main(template: Path) -> None:
                                                 "word/_rels/fontTable.xml.rels"):
             files[n] = tpl.read(n)
     ct = files["[Content_Types].xml"].decode()
-    for ext, typ in (("png", "image/png"), ("ttf", "application/x-font-ttf"),
+    for ext, typ in (("png", "image/png"), ("svg", "image/svg+xml"),
+                     ("ttf", "application/x-font-ttf"),
                      ("odttf", "application/vnd.openxmlformats-officedocument.obfuscatedFont")):
         if 'Extension="%s"' % ext not in ct:
             ct = ct.replace("<Default ", '<Default Extension="%s" ContentType="%s"/><Default '
