@@ -233,7 +233,8 @@ verification, and verification $\rightarrow$ use.
 \paragraph{Prior work and third-party code.}
 All testbed, defense, grading and analysis code was written during the hackathon. Third-party
 components are the A2A Python SDK and standard Python/Docker images. The repository also vendors
-a BashArena task \cite{basharena}, which is not used in these experiments.
+BashArena tasks \cite{basharena}, used only in the companion testbed
+(Appendix~\ref{app:basharena}).
 
 \section{Results}
 
@@ -368,14 +369,10 @@ The results show the race and the defenses' trade-offs in this setting, not popu
 Appendix~\ref{app:limitations} details assumptions and dual-use considerations.
 
 \subsection*{Future Work}
-\begin{itemize}
-  \item dependency manifests binding every file a plan reads;
-  \item structured criteria separating the approval contract from the plan;
-  \item a different-family verifier;
-  \item stronger and adaptive injections;
-  \item an A2A ``approval-binding'' extension.
-\end{itemize}
-The full list is in Appendix~\ref{app:future}.
+Next steps include dependency manifests that bind every file a plan reads, structured criteria
+that separate the approval contract from the plan, a different-family verifier, stronger and
+adaptive injections, and an A2A ``approval-binding'' extension. The full list is in
+Appendix~\ref{app:future}.
 
 \section{Conclusion}
 A2A approval gates are vulnerable to a simple TOCTOU race that real LLM agents follow 55--100\%
