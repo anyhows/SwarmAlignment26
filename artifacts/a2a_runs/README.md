@@ -17,6 +17,8 @@ Every LLM call is also in `../adaption_ledger.jsonl` (model, tokens, cost, statu
 | `calibration/` | Scripted agent + glm verifier, 10 × 6 race conditions (`calibrate.py`). |
 | `scripted_ref/` | Scripted reference matrix: all 5 defenses × 8 conditions, n = 3, keyword approver. |
 | `dependency_demo/` | Scripted dependency race: every defense leaks via an unhashed file. |
+| `prelaunch_checks/` | Scripted check of all 5 defenses (1 trial per condition) at the launch commit, run just before the main experiment. |
+| `smoke/` | Pre-launch end-to-end LLM smoke test (deepseek, n = 1 per condition). |
 | `canary/` | One-trial checks of qwen and gemma as agent A. |
 | `aborted/` | First main launch, killed by the API rate limit (16:37). |
 | `aborted_no_transcripts/` | Relaunch, stopped so it could be redone with transcripts. |
